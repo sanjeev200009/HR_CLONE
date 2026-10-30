@@ -41,6 +41,11 @@ export default defineSchema({
     companyAddress: v.optional(v.string()),
     status: v.union(v.literal("active"), v.literal("suspended")),
     planId: v.optional(v.id("plans")),
+    // Subscription lives on the org: one org has exactly one current subscription,
+    // so a separate table would be a join for nothing. Payment history waits for a
+    // real payment gateway (PRD §11 defers it until after customer validation).
+    billingPeriod: v.optional(v.union(v.literal("monthly"), v.literal("annual"), v.literal("trial"))),
+    expiresAt: v.optional(v.number()), // a cron suspends the org past this
     // attendance rules: four knobs per org
     timezone: v.string(), // "Asia/Colombo"
     expectedStart: v.string(), // "09:00"
@@ -99,6 +104,7 @@ export default defineSchema({
     clockOut: v.optional(fix),
     isLate: v.boolean(),
     device: v.optional(v.string()), // "android 14 / app 1.2.0"
+    reminderSentAt: v.optional(v.number()), // so the sweep never double-notifies
   })
     // ponytail: no partial unique index in Convex — the clockIn mutation reads
     // by_member_open first and rejects a second open session. Convex mutations are
