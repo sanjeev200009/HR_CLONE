@@ -1,9 +1,12 @@
-import { useEffect } from "react";
-import { Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { useAuth, useUser } from "@clerk/expo";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
-import { s } from "./ui";
+import { s, c } from "./ui";
+import { usePush } from "./usePush";
+import Clock from "./Clock";
+import History from "./History";
 
 // Post-sign-in routing. Four states worth distinguishing, because "it doesn't work"
 // from a pilot customer is usually one of the middle two:
@@ -13,6 +16,7 @@ export default function Home() {
   const { user } = useUser();
   const memberships = useQuery(api.members.me);
   const claim = useMutation(api.members.claim);
+  const [tab, setTab] = useState<"clock" | "history">("clock");
 
   // First sign-in: bind this Clerk user to the member row the admin pre-created.
   // Runs once the query has resolved to an empty list. members.claim is idempotent.
@@ -20,18 +24,23 @@ export default function Home() {
     if (memberships?.length === 0) claim().catch(() => {});
   }, [memberships, claim]);
 
+  // ponytail: one membership per person for now. Multi-org (a consultant at two
+  // client companies) needs an org picker — add it when a customer actually asks.
+  const m = memberships?.[0] ?? null;
+  usePush(m && m.role === "employee" ? m.orgId : null);
+
   // useQuery -> undefined while loading; members.me -> null when not signed in.
   if (memberships == null) {
     return (
-      <View style={s.screen}>
+      <View style={[s.screen, { justifyContent: "center" }]}>
         <ActivityIndicator />
       </View>
     );
   }
 
-  if (memberships.length === 0) {
+  if (!m) {
     return (
-      <View style={s.screen}>
+      <View style={[s.screen, { justifyContent: "center" }]}>
         <Text style={s.h1}>Not set up yet</Text>
         <Text style={s.muted}>
           {user?.primaryEmailAddress?.emailAddress} isn't registered with any company on
@@ -45,13 +54,9 @@ export default function Home() {
     );
   }
 
-  // ponytail: one membership per person for now. Multi-org (a consultant at two
-  // client companies) needs an org picker — add it when a customer actually asks.
-  const m = memberships[0];
-
   if (m.role === "admin") {
     return (
-      <View style={s.screen}>
+      <View style={[s.screen, { justifyContent: "center" }]}>
         <Text style={s.h1}>Hi {m.fullName}</Text>
         <Text style={s.muted}>
           You're an admin of {m.orgName}. This app is for employee clock in and out — use
@@ -65,18 +70,43 @@ export default function Home() {
   }
 
   return (
-    <View style={s.screen}>
-      <Text style={s.h1}>Hi {m.fullName}</Text>
-      <Text style={s.muted}>
-        {m.orgName} · {m.timezone}
-      </Text>
-      <Text style={s.label}>
-        Signed in and bound to your membership. The clock in/out button lands in phase M2
-        and the GPS check in M3.
-      </Text>
-      <TouchableOpacity style={s.button} onPress={() => signOut()}>
-        <Text style={s.buttonText}>Sign out</Text>
-      </TouchableOpacity>
+    <View style={{ flex: 1, backgroundColor: c.bg }}>
+      <View style={{ flex: 1 }}>
+        {tab === "clock" ? (
+          <Clock orgId={m.orgId} orgName={m.orgName} fullName={m.fullName} />
+        ) : (
+          <History orgId={m.orgId} timezone={m.timezone} />
+        )}
+      </View>
+
+      {/* Two screens does not justify a router. Revisit at the third. */}
+      <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#eee" }}>
+        {(["clock", "history"] as const).map((t) => (
+          <TouchableOpacity
+            key={t}
+            style={{ flex: 1, paddingVertical: 14, alignItems: "center" }}
+            onPress={() => setTab(t)}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: tab === t }}
+          >
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: tab === t ? "700" : "400",
+                color: tab === t ? c.text : c.muted,
+              }}
+            >
+              {t === "clock" ? "Clock" : "History"}
+            </Text>
+          </TouchableOpacity>
+        ))}
+        <TouchableOpacity
+          style={{ paddingVertical: 14, paddingHorizontal: 18, alignItems: "center" }}
+          onPress={() => signOut()}
+        >
+          <Text style={{ fontSize: 15, color: c.muted }}>Sign out</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
