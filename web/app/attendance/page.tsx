@@ -1,0 +1,239 @@
+"use client";
+
+import { useState } from "react";
+import { useQuery } from "convex/react";
+import { api } from "@convex/_generated/api";
+import { Id } from "@convex/_generated/dataModel";
+import Shell, { useOrg } from "../components/Shell";
+import { INPUT, BUTTON, BUTTON_QUIET, Field, Th, clean } from "../components/ui";
+import { time, duration, todayIso, monthStartIso } from "../lib/format";
+
+export default function Page() {
+  return (
+    <Shell>
+      <Attendance />
+    </Shell>
+  );
+}
+
+function Attendance() {
+  const { orgId, orgName, timezone } = useOrg();
+  const employees = useQuery(api.employees.list, { orgId });
+
+  const [from, setFrom] = useState(() => monthStartIso(timezone));
+  const [to, setTo] = useState(() => todayIso(timezone));
+  const [memberId, setMemberId] = useState("");
+
+  const rows = useQuery(api.admin.attendanceRange, {
+    orgId,
+    from,
+    to,
+    memberId: memberId ? (memberId as Id<"members">) : undefined,
+  });
+
+  const totalMs = (rows ?? []).reduce((sum, r) => sum + r.workedMs, 0);
+
+  return (
+    <>
+      <h1 className="text-2xl font-semibold">Attendance</h1>
+
+      <div className="mt-6 grid gap-3 rounded-lg border border-neutral-200 bg-white p-4 sm:grid-cols-4">
+        <Field label="From">
+          <input type="date" className={INPUT} value={from} onChange={(e) => setFrom(e.target.value)} />
+        </Field>
+        <Field label="To">
+          <input type="date" className={INPUT} value={to} onChange={(e) => setTo(e.target.value)} />
+        </Field>
+        <Field label="Employee">
+          <select className={INPUT} value={memberId} onChange={(e) => setMemberId(e.target.value)}>
+            <option value="">Everyone</option>
+            {(employees ?? []).map((m) => (
+              <option key={m._id} value={m._id}>
+                {m.fullName}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <div className="flex items-end gap-2">
+          <button
+            className={BUTTON}
+            disabled={!rows || rows.length === 0}
+            onClick={() => rows && downloadCsv(rows, timezone, orgName, from, to)}
+          >
+            Export CSV
+          </button>
+          <button
+            className={BUTTON_QUIET}
+            onClick={() => {
+              setFrom(monthStartIso(timezone));
+              setTo(todayIso(timezone));
+              setMemberId("");
+            }}
+          >
+            This month
+          </button>
+        </div>
+      </div>
+
+      {rows === undefined ? (
+        <p className="mt-6 text-neutral-500">Loading…</p>
+      ) : (
+        <>
+          <p className="mt-6 text-sm text-neutral-600">
+            {rows.length} record{rows.length === 1 ? "" : "s"} · {duration(totalMs)} total ·
+            times shown in {timezone}
+          </p>
+
+          <div className="mt-3 overflow-x-auto rounded-lg border border-neutral-200 bg-white">
+            <table className="w-full text-sm">
+              <thead className="border-b border-neutral-200 text-neutral-500">
+                <tr>
+                  <Th>Date</Th>
+                  <Th>Employee</Th>
+                  <Th>In</Th>
+                  <Th>Out</Th>
+                  <Th>Worked</Th>
+                  <Th>Verification</Th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r._id} className="border-b border-neutral-100 last:border-0">
+                    <td className="px-4 py-3 tabular-nums">{r.workDate}</td>
+                    <td className="px-4 py-3">{r.fullName}</td>
+                    <td className="px-4 py-3 tabular-nums">
+                      {time(r.clockInAt, timezone)}
+                      {r.isLate && <span className="ml-1 text-xs text-amber-700">late</span>}
+                    </td>
+                    <td className="px-4 py-3 tabular-nums">
+                      {r.clockOutAt ? (
+                        time(r.clockOutAt, timezone)
+                      ) : (
+                        <span className="text-red-700">missing</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 tabular-nums">{duration(r.workedMs)}</td>
+                    <td className="px-4 py-3 text-xs">
+                      <Verification
+                        status={r.clockInStatus}
+                        distanceM={r.clockInDistanceM}
+                        label="in"
+                      />
+                      {r.clockOutStatus && (
+                        <Verification
+                          status={r.clockOutStatus}
+                          distanceM={r.clockOutDistanceM}
+                          label="out"
+                        />
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {rows.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-6 text-neutral-500">
+                      Nothing in this range.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+    </>
+  );
+}
+
+function Verification({
+  status,
+  distanceM,
+  label,
+}: {
+  status: string;
+  distanceM: number | null;
+  label: string;
+}) {
+  if (status === "verified") {
+    return (
+      <div className="text-green-800">
+        {label}: at workplace{distanceM !== null ? ` (${distanceM}m)` : ""}
+      </div>
+    );
+  }
+  const words: Record<string, string> = {
+    out_of_range: distanceM !== null ? `${distanceM}m away` : "outside workplace",
+    low_accuracy: "location too imprecise",
+    no_location: "no location",
+    suspect_mocked: "location reported as simulated",
+  };
+  return <div className="text-amber-700">{label}: {words[status] ?? status}</div>;
+}
+
+/**
+ * CSV built and downloaded in the browser from the rows already on screen.
+ *
+ * No server endpoint, no file storage, no extra dependency — the data is here and
+ * the browser can save it. Excel export is deliberately out of the MVP; Excel opens
+ * CSV.
+ */
+function downloadCsv(
+  rows: NonNullable<ReturnType<typeof useQuery<typeof api.admin.attendanceRange>>>,
+  timezone: string,
+  orgName: string,
+  from: string,
+  to: string,
+) {
+  const header = [
+    "Date", "Employee", "Email", "Clock in", "Clock out", "Worked hours",
+    "Late", "Missed clock-out", "In verification", "In distance (m)",
+    "Out verification", "Out distance (m)", "In lat", "In lng", "Out lat", "Out lng", "Device",
+  ];
+
+  const body = rows.map((r) => [
+    r.workDate,
+    r.fullName,
+    r.email,
+    time(r.clockInAt, timezone),
+    r.clockOutAt ? time(r.clockOutAt, timezone) : "",
+    (r.workedMs / 3_600_000).toFixed(2),
+    r.isLate ? "yes" : "no",
+    r.missedClockOut ? "yes" : "no",
+    r.clockInStatus,
+    r.clockInDistanceM ?? "",
+    r.clockOutStatus ?? "",
+    r.clockOutDistanceM ?? "",
+    r.clockInLat ?? "",
+    r.clockInLng ?? "",
+    r.clockOutLat ?? "",
+    r.clockOutLng ?? "",
+    r.device ?? "",
+  ]);
+
+  const csv = [header, ...body]
+    .map((cols) => cols.map(csvCell).join(","))
+    .join("\r\n"); // CRLF: Excel on Windows is the audience
+
+  // BOM, or Excel mangles non-ASCII names in Sinhala/Tamil.
+  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `attendance-${slug(orgName)}-${from}-to-${to}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Quote every cell and neutralise formula injection.
+ *
+ * A name or reason beginning = + - @ is executed by Excel on open. An employee can
+ * type their own correction reason, so this is reachable user input, not paranoia.
+ */
+function csvCell(value: string | number) {
+  const s = String(value);
+  const safe = /^[=+\-@\t\r]/.test(s) ? `'${s}` : s;
+  return `"${safe.replace(/"/g, '""')}"`;
+}
+
+const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");

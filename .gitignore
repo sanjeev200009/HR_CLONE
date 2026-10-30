@@ -49,3 +49,5 @@ yarn-error.*
 # local env — .env holds the Clerk publishable key and Convex URL
 .env*
 !.env.example
+web/.next/
+web/node_modules/
