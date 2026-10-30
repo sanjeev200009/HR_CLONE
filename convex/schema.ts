@@ -1,7 +1,8 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-import { authTables } from "@convex-dev/auth/server";
 
+// Clerk owns identity. There is no `users` table and no authTables — the only link
+// to a human is `clerkUserId`, the Clerk subject from ctx.auth.getUserIdentity().
 // Convex has no RLS. Tenant isolation is enforced in convex/lib/guard.ts and
 // NOTHING may query these tables without going through it.
 
@@ -10,11 +11,22 @@ const verifyStatus = v.union(
   v.literal("out_of_range"),
   v.literal("low_accuracy"),
   v.literal("no_location"),
+  v.literal("suspect_mocked"), // Android reported the fix as mock-generated
 );
 
-export default defineSchema({
-  ...authTables, // users, authAccounts, authSessions… from @convex-dev/auth
+// One side of a clock action. Everything here is a claim by the device except
+// distanceM and status, which the mutation computes.
+const fix = v.object({
+  lat: v.optional(v.number()),
+  lng: v.optional(v.number()),
+  accuracyM: v.optional(v.number()),
+  distanceM: v.optional(v.number()),
+  isMocked: v.optional(v.boolean()), // expo-location `mocked`, Android only
+  integrity: v.optional(v.string()), // Play Integrity verdict, if checked
+  status: verifyStatus,
+});
 
+export default defineSchema({
   plans: defineTable({
     name: v.string(),
     monthlyPrice: v.number(),
@@ -39,7 +51,9 @@ export default defineSchema({
   }),
 
   // platform owner, kept separate so super admin is never implicit
-  platformAdmins: defineTable({ userId: v.id("users") }).index("by_user", ["userId"]),
+  platformAdmins: defineTable({ clerkUserId: v.string() }).index("by_clerk_user", [
+    "clerkUserId",
+  ]),
 
   departments: defineTable({
     orgId: v.id("organizations"),
@@ -58,7 +72,10 @@ export default defineSchema({
 
   members: defineTable({
     orgId: v.id("organizations"),
-    userId: v.id("users"),
+    // Admin creates the row with an email only; clerkUserId is filled on the
+    // employee's first sign-in by claimMembership. See convex/lib/guard.ts.
+    email: v.string(), // lowercased
+    clerkUserId: v.optional(v.string()),
     fullName: v.string(),
     phone: v.optional(v.string()),
     role: v.union(v.literal("employee"), v.literal("admin")),
@@ -66,9 +83,10 @@ export default defineSchema({
     workplaceId: v.optional(v.id("workplaces")),
     isActive: v.boolean(),
   })
-    .index("by_user", ["userId"]) // login -> which orgs am I in
+    .index("by_clerk_user", ["clerkUserId"]) // login -> which orgs am I in
+    .index("by_email", ["email"]) // claim on first sign-in
     .index("by_org", ["orgId"])
-    .index("by_org_user", ["orgId", "userId"]),
+    .index("by_org_clerk_user", ["orgId", "clerkUserId"]),
 
   attendance: defineTable({
     orgId: v.id("organizations"),
@@ -77,24 +95,10 @@ export default defineSchema({
     workDate: v.string(), // org-local "YYYY-MM-DD", computed server side
     clockInAt: v.number(), // Date.now() on the server; device clock is untrusted
     clockOutAt: v.optional(v.number()),
-    clockIn: v.object({
-      lat: v.optional(v.number()),
-      lng: v.optional(v.number()),
-      accuracyM: v.optional(v.number()),
-      distanceM: v.optional(v.number()),
-      status: verifyStatus,
-    }),
-    clockOut: v.optional(
-      v.object({
-        lat: v.optional(v.number()),
-        lng: v.optional(v.number()),
-        accuracyM: v.optional(v.number()),
-        distanceM: v.optional(v.number()),
-        status: verifyStatus,
-      }),
-    ),
+    clockIn: fix,
+    clockOut: v.optional(fix),
     isLate: v.boolean(),
-    device: v.optional(v.string()),
+    device: v.optional(v.string()), // "android 14 / app 1.2.0"
   })
     // ponytail: no partial unique index in Convex — the clockIn mutation reads
     // by_member_open first and rejects a second open session. Convex mutations are
@@ -116,9 +120,19 @@ export default defineSchema({
     .index("by_org_status", ["orgId", "status"])
     .index("by_member", ["memberId"]),
 
+  // Expo push tokens, for the one notification we send: missed clock-out.
+  pushTokens: defineTable({
+    orgId: v.id("organizations"),
+    memberId: v.id("members"),
+    token: v.string(),
+    platform: v.union(v.literal("android"), v.literal("ios")),
+  })
+    .index("by_member", ["memberId"])
+    .index("by_token", ["token"]),
+
   auditLogs: defineTable({
     orgId: v.optional(v.id("organizations")),
-    actorUserId: v.optional(v.id("users")),
+    actorClerkUserId: v.optional(v.string()),
     action: v.string(),
     entityType: v.optional(v.string()),
     entityId: v.optional(v.string()),
