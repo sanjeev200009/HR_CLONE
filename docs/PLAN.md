@@ -50,6 +50,14 @@ GPS does not prove presence. Ranked by effort, MVP takes the first four:
 
 ## Status (2026-10-31)
 
+**Scope changed on request**: the user chose a full Gallery HR clone over
+attendance-only, reversing the earlier decision. PRD §14/§15 argue against it
+(simplicity was the differentiator) — the concern was raised twice and
+overruled, which is the user's call. Leave, directory, timesheets and feedback
+are now built. Payroll is NOT: Sri Lankan EPF/ETF/PAYE is statutory compliance
+and the rates need confirming rather than guessing.
+
+
 Phases 1-6 and M1-M5 are **built, typechecked and pushed**: shared Convex backend,
 Expo employee app, Next.js admin + platform dashboard, 49 passing tests.
 

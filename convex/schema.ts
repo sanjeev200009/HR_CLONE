@@ -53,6 +53,10 @@ export default defineSchema({
     graceMinutes: v.number(),
     minHours: v.number(),
     maxAccuracyM: v.number(), // reject GPS fixes worse than this
+    // 0=Sunday .. 6=Saturday. Leave day counting skips these. Sri Lanka is [0,6];
+    // a Gulf customer would be [5,6], which is exactly why it is not hardcoded.
+    weekendDays: v.optional(v.array(v.number())),
+    leaveYearStartMonth: v.optional(v.number()), // 1-12, default January
   }),
 
   // platform owner, kept separate so super admin is never implicit
@@ -84,6 +88,13 @@ export default defineSchema({
     fullName: v.string(),
     phone: v.optional(v.string()),
     role: v.union(v.literal("employee"), v.literal("admin")),
+    // Directory + profile. Optional so every existing row stays valid.
+    jobTitle: v.optional(v.string()),
+    managerId: v.optional(v.id("members")), // reporting line, for approvals
+    joinedOn: v.optional(v.string()), // "YYYY-MM-DD"; drives leave pro-rating
+    about: v.optional(v.string()),
+    emergencyContact: v.optional(v.string()),
+    avatarStorageId: v.optional(v.id("_storage")),
     departmentId: v.optional(v.id("departments")),
     workplaceId: v.optional(v.id("workplaces")),
     isActive: v.boolean(),
@@ -135,6 +146,123 @@ export default defineSchema({
   })
     .index("by_member", ["memberId"])
     .index("by_token", ["token"]),
+
+  // ---------------------------------------------------------------------------
+  // Leave. The largest module after attendance, and the one with real arithmetic:
+  // entitlement, accrual, carry-forward and a day count that has to agree with
+  // the customer's weekend and public holidays.
+  // ---------------------------------------------------------------------------
+
+  leaveTypes: defineTable({
+    orgId: v.id("organizations"),
+    name: v.string(), // "Annual", "Casual", "Medical" — Sri Lankan norms differ by org
+    daysPerYear: v.number(),
+    isPaid: v.boolean(),
+    carryForwardMax: v.number(), // 0 = use it or lose it
+    // Accrue monthly rather than granting the year up front, so a new hire in
+    // November does not get 14 days on day one.
+    accrualMode: v.union(v.literal("upfront"), v.literal("monthly")),
+    requiresApproval: v.boolean(),
+    allowHalfDay: v.boolean(),
+    isActive: v.boolean(),
+  }).index("by_org", ["orgId"]),
+
+  leaveRequests: defineTable({
+    orgId: v.id("organizations"),
+    memberId: v.id("members"),
+    leaveTypeId: v.id("leaveTypes"),
+    startDate: v.string(), // "YYYY-MM-DD", org-local
+    endDate: v.string(),
+    // Only meaningful for a single-day request; validated in the mutation.
+    halfDay: v.optional(v.union(v.literal("morning"), v.literal("afternoon"))),
+    days: v.number(), // computed server-side, never trusted from the client
+    reason: v.string(),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("approved"),
+      v.literal("rejected"),
+      v.literal("cancelled"),
+    ),
+    reviewedBy: v.optional(v.id("members")),
+    reviewedAt: v.optional(v.number()),
+    reviewNote: v.optional(v.string()),
+  })
+    .index("by_org_status", ["orgId", "status"])
+    .index("by_member", ["memberId"])
+    .index("by_member_start", ["memberId", "startDate"])
+    .index("by_org_start", ["orgId", "startDate"]),
+
+  // Balances are a MATERIALISED cache, not the source of truth. The truth is the
+  // approved requests; recompute() rebuilds this from them. Storing it keeps the
+  // employee's balance screen one read instead of a full scan of their history.
+  leaveBalances: defineTable({
+    orgId: v.id("organizations"),
+    memberId: v.id("members"),
+    leaveTypeId: v.id("leaveTypes"),
+    year: v.number(),
+    entitledDays: v.number(),
+    carriedDays: v.number(),
+    usedDays: v.number(),
+    pendingDays: v.number(),
+  })
+    .index("by_member_year", ["memberId", "year"])
+    .index("by_member_type_year", ["memberId", "leaveTypeId", "year"])
+    .index("by_org_year", ["orgId", "year"]),
+
+  // Public holidays. A leave request spanning one must not consume a leave day,
+  // and attendance on one must not count as late.
+  holidays: defineTable({
+    orgId: v.id("organizations"),
+    date: v.string(), // "YYYY-MM-DD"
+    name: v.string(),
+  })
+    .index("by_org", ["orgId"])
+    .index("by_org_date", ["orgId", "date"]),
+
+  // ---------------------------------------------------------------------------
+  // Timesheets. Derived from attendance, not a second source of truth — a
+  // timesheet row records only the weekly SUBMISSION and its approval.
+  // ---------------------------------------------------------------------------
+
+  timesheets: defineTable({
+    orgId: v.id("organizations"),
+    memberId: v.id("members"),
+    weekStart: v.string(), // Monday, "YYYY-MM-DD", org-local
+    status: v.union(
+      v.literal("draft"),
+      v.literal("submitted"),
+      v.literal("approved"),
+      v.literal("rejected"),
+    ),
+    totalMs: v.number(), // snapshot at submission, so later edits are visible
+    note: v.optional(v.string()),
+    submittedAt: v.optional(v.number()),
+    reviewedBy: v.optional(v.id("members")),
+    reviewedAt: v.optional(v.number()),
+    reviewNote: v.optional(v.string()),
+  })
+    .index("by_member_week", ["memberId", "weekStart"])
+    .index("by_org_status", ["orgId", "status"])
+    .index("by_org_week", ["orgId", "weekStart"]),
+
+  // ---------------------------------------------------------------------------
+  // Coworker feedback. Visibility is enforced in the query, not the UI.
+  // ---------------------------------------------------------------------------
+
+  feedback: defineTable({
+    orgId: v.id("organizations"),
+    fromMemberId: v.id("members"),
+    toMemberId: v.id("members"),
+    body: v.string(),
+    // private  -> only the recipient and their manager
+    // manager  -> only the recipient's manager and admins (upward feedback)
+    // team     -> anyone in the org can read it on the profile
+    visibility: v.union(v.literal("private"), v.literal("manager"), v.literal("team")),
+    isAnonymous: v.boolean(),
+  })
+    .index("by_to", ["toMemberId"])
+    .index("by_from", ["fromMemberId"])
+    .index("by_org", ["orgId"]),
 
   auditLogs: defineTable({
     orgId: v.optional(v.id("organizations")),

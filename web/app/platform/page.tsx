@@ -257,9 +257,14 @@ function Plans({ plans }: { plans: NonNullable<ReturnType<typeof useQuery<typeof
                   <button
                     className="text-xs text-blue-700 hover:underline"
                     onClick={() =>
-                      upsert({ planId: p._id, ...p, isActive: !p.isActive }).catch((e) =>
-                        setError(clean(e)),
-                      )
+                      upsert({
+                        planId: p._id,
+                        name: p.name,
+                        monthlyPrice: p.monthlyPrice,
+                        annualPrice: p.annualPrice,
+                        employeeLimit: p.employeeLimit,
+                        isActive: !p.isActive,
+                      }).catch((e) => setError(clean(e)))
                     }
                   >
                     {p.isActive ? "yes" : "no"}

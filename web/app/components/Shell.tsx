@@ -34,6 +34,9 @@ export function useOrg(): OrgContext {
 const NAV = [
   { href: "/", label: "Today" },
   { href: "/attendance", label: "Attendance" },
+  { href: "/timesheets", label: "Timesheets" },
+  { href: "/leave", label: "Leave" },
+  { href: "/directory", label: "Directory" },
   { href: "/employees", label: "Employees" },
   { href: "/workplaces", label: "Workplaces" },
   { href: "/corrections", label: "Corrections" },

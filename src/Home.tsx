@@ -7,16 +7,27 @@ import { s, c } from "./ui";
 import { usePush } from "./usePush";
 import Clock from "./Clock";
 import History from "./History";
+import Leave from "./Leave";
+import Team from "./Team";
 
 // Post-sign-in routing. Four states worth distinguishing, because "it doesn't work"
 // from a pilot customer is usually one of the middle two:
 //   loading | not claimed yet | admin (wrong app) | employee -> clock screen
+type Tab = "clock" | "history" | "leave" | "team";
+
+const LABELS: Record<Tab, string> = {
+  clock: "Clock",
+  history: "History",
+  leave: "Leave",
+  team: "Team",
+};
+
 export default function Home() {
   const { signOut } = useAuth();
   const { user } = useUser();
   const memberships = useQuery(api.members.me);
   const claim = useMutation(api.members.claim);
-  const [tab, setTab] = useState<"clock" | "history">("clock");
+  const [tab, setTab] = useState<Tab>("clock");
 
   // First sign-in: bind this Clerk user to the member row the admin pre-created.
   // Runs once the query has resolved to an empty list. members.claim is idempotent.
@@ -72,16 +83,18 @@ export default function Home() {
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <View style={{ flex: 1 }}>
-        {tab === "clock" ? (
+        {tab === "clock" && (
           <Clock orgId={m.orgId} orgName={m.orgName} fullName={m.fullName} />
-        ) : (
-          <History orgId={m.orgId} timezone={m.timezone} />
         )}
+        {tab === "history" && <History orgId={m.orgId} timezone={m.timezone} />}
+        {tab === "leave" && <Leave orgId={m.orgId} timezone={m.timezone} />}
+        {tab === "team" && <Team orgId={m.orgId} />}
       </View>
 
-      {/* Two screens does not justify a router. Revisit at the third. */}
+      {/* Four tabs now. Still a state switch rather than expo-router: there is
+          no deep linking, no nested stack and no URL to honour on mobile. */}
       <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#eee" }}>
-        {(["clock", "history"] as const).map((t) => (
+        {(["clock", "history", "leave", "team"] as const).map((t) => (
           <TouchableOpacity
             key={t}
             style={{ flex: 1, paddingVertical: 14, alignItems: "center" }}
@@ -91,20 +104,20 @@ export default function Home() {
           >
             <Text
               style={{
-                fontSize: 15,
+                fontSize: 14,
                 fontWeight: tab === t ? "700" : "400",
                 color: tab === t ? c.text : c.muted,
               }}
             >
-              {t === "clock" ? "Clock" : "History"}
+              {LABELS[t]}
             </Text>
           </TouchableOpacity>
         ))}
         <TouchableOpacity
-          style={{ paddingVertical: 14, paddingHorizontal: 18, alignItems: "center" }}
+          style={{ paddingVertical: 14, paddingHorizontal: 14, alignItems: "center" }}
           onPress={() => signOut()}
         >
-          <Text style={{ fontSize: 15, color: c.muted }}>Sign out</Text>
+          <Text style={{ fontSize: 14, color: c.muted }}>Exit</Text>
         </TouchableOpacity>
       </View>
     </View>

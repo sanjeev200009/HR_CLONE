@@ -59,6 +59,25 @@ export const s = StyleSheet.create({
   rowTitle: { fontSize: 16, fontWeight: "600", color: c.text },
   rowSub: { fontSize: 13, color: c.muted, marginTop: 2 },
 
+  // Balance cards and leave-type chips.
+  card: {
+    borderWidth: 1,
+    borderColor: "#eee",
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 12,
+  },
+  chip: {
+    borderWidth: 1,
+    borderColor: c.border,
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
+  chipOn: { backgroundColor: c.text, borderColor: c.text },
+  chipText: { fontSize: 14, color: c.text },
+  chipTextOn: { fontSize: 14, color: c.onDark, fontWeight: "600" },
+
   link: { color: c.link, fontSize: 15, marginTop: 20, textAlign: "center" },
   ok: { color: c.in, fontSize: 14, marginTop: 10, fontWeight: "500" },
   warn: { color: c.warn, fontSize: 14, marginTop: 10, fontWeight: "500" },
