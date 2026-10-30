@@ -15,4 +15,4 @@ Honest limits stated to customers: GPS is not proof of presence; readings can be
 
 Validation before selling: interview 5–10 SMBs, demo MVP, get 2–3 paying pilots.
 
-Full roadmap, stack decisions and out-of-scope list: `PLAN.md`. Schema: `../supabase/schema.sql`.
+Full roadmap, stack decisions and out-of-scope list: `PLAN.md`. Schema: `../convex/schema.ts`. Tenant boundary: `../convex/lib/guard.ts`.
