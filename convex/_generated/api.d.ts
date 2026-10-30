@@ -8,7 +8,9 @@
  * @module
  */
 
+import type * as attendance from "../attendance.js";
 import type * as lib_guard from "../lib/guard.js";
+import type * as lib_time from "../lib/time.js";
 import type * as members from "../members.js";
 import type * as seed from "../seed.js";
 
@@ -19,7 +21,9 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  attendance: typeof attendance;
   "lib/guard": typeof lib_guard;
+  "lib/time": typeof lib_time;
   members: typeof members;
   seed: typeof seed;
 }>;
