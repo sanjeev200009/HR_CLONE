@@ -48,6 +48,24 @@ GPS does not prove presence. Ranked by effort, MVP takes the first four:
 | Play Integrity API (rooted / tampered device) | yes — the one with teeth |
 | rotating signed workplace QR (PRD §6) | no — only if a customer asks |
 
+## Status (2026-10-31)
+
+Phases 1-6 and M1-M5 are **built, typechecked and pushed**: shared Convex backend,
+Expo employee app, Next.js admin + platform dashboard, 49 passing tests.
+
+Outstanding, in the order it matters:
+1. **Activate the Convex integration in the Clerk dashboard** and confirm sign-in
+   end to end on a real device. Until then Clerk authenticates but Convex rejects
+   the token.
+2. **M6 device reality** — permission denied, GPS off, airplane mode mid-clock, a
+   mock-location app installed, duplicate clock-in. The unit tests cover the
+   server's half of each; none of it has touched real Android.
+3. **Play Integrity** — in the GPS trust ladder below but not yet wired.
+4. **M0 REA recon** — blocked: no APK, and galleryerp.com serves a Plesk
+   placeholder, so there is no web bundle either.
+5. Relax the Clerk password rule (min 15 chars, required) — it will not survive
+   contact with shop-floor staff.
+
 ## Phases — web
 1. **Foundation** — `npm create convex`, `convex/schema.ts` pushed, Clerk Convex
    integration activated, `CLERK_JWT_ISSUER_DOMAIN` set on Convex, login redirect by

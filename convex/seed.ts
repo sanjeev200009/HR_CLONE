@@ -58,3 +58,25 @@ export const dev = internalMutation({
     return { already: false, orgId, workplaceId, memberId };
   },
 });
+
+/**
+ * Grant platform-owner access.
+ *
+ * Takes a Clerk user id rather than an email because platformAdmins is keyed on
+ * the Clerk subject, and Convex cannot look a user up in Clerk without the secret
+ * key. Sign in to the app once, then find your id in the Clerk dashboard under
+ * Users (it looks like user_2abc...), or run `npx clerk users list`.
+ *
+ *   npx convex run seed:platformAdmin '{"clerkUserId":"user_..."}'
+ */
+export const platformAdmin = internalMutation({
+  args: { clerkUserId: v.string() },
+  handler: async (ctx, { clerkUserId }) => {
+    const existing = await ctx.db
+      .query("platformAdmins")
+      .withIndex("by_clerk_user", (q) => q.eq("clerkUserId", clerkUserId))
+      .unique();
+    if (existing) return { already: true, id: existing._id };
+    return { already: false, id: await ctx.db.insert("platformAdmins", { clerkUserId }) };
+  },
+});

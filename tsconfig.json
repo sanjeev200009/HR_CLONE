@@ -2,5 +2,9 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true
-  }
+  },
+  // web/ is a separate package with its own tsconfig and its own @convex/* alias.
+  // Without this exclude, Expo's config tries to typecheck it and cannot resolve
+  // that alias. Check it with `cd web && npx tsc --noEmit`.
+  "exclude": ["node_modules", "web"]
 }
