@@ -55,11 +55,31 @@ export function formatHm(minutes: number): string {
   return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
 }
 
-/** Late if the org-local clock-in time is past expectedStart + grace. */
+/**
+ * Late if the org-local clock-in time is past expectedStart + grace.
+ *
+ * A public holiday or a weekend is never late: somebody who came in on a day the
+ * company is closed has done the opposite of arriving late, and marking them
+ * late for it is the kind of detail that loses a pilot customer.
+ */
 export function isLate(
   clockInAt: number,
-  org: { timezone: string; expectedStart: string; graceMinutes: number },
+  org: {
+    timezone: string;
+    expectedStart: string;
+    graceMinutes: number;
+    weekendDays?: number[];
+  },
+  holidays?: Set<string>,
 ): boolean {
+  const date = workDate(clockInAt, org.timezone);
+  if (holidays?.has(date)) return false;
+
+  const weekend = org.weekendDays ?? [0, 6];
+  // Day of week for the ORG-local date, not the server's.
+  const dow = new Date(Date.parse(`${date}T00:00:00Z`)).getUTCDay();
+  if (weekend.includes(dow)) return false;
+
   return (
     minutesIntoDay(clockInAt, org.timezone) >
     parseHm(org.expectedStart) + org.graceMinutes

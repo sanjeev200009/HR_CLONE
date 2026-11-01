@@ -264,6 +264,111 @@ export default defineSchema({
     .index("by_from", ["fromMemberId"])
     .index("by_org", ["orgId"]),
 
+  // ---------------------------------------------------------------------------
+  // Payroll. Money is held in CENTS as integers throughout — see
+  // convex/lib/payroll.ts for why, and for the order of operations.
+  //
+  // Statutory rates are configuration, not constants. Sri Lankan EPF (8% employee
+  // / 12% employer) and ETF (3% employer) are seeded as defaults, but PAYE bands
+  // start EMPTY: with none configured no PAYE is deducted and the payslip says so,
+  // because inventing a tax number is worse than not computing one.
+  // ---------------------------------------------------------------------------
+
+  payrollConfig: defineTable({
+    orgId: v.id("organizations"),
+    currency: v.string(), // "LKR"
+    epfEmployeePct: v.number(),
+    epfEmployerPct: v.number(),
+    etfEmployerPct: v.number(),
+    payeBands: v.array(v.object({ upToCents: v.number(), percent: v.number() })),
+    otMultiplier: v.number(),
+    workingDaysPerMonth: v.number(),
+    hoursPerDay: v.number(),
+  }).index("by_org", ["orgId"]),
+
+  salaries: defineTable({
+    orgId: v.id("organizations"),
+    memberId: v.id("members"),
+    basicCents: v.number(),
+    allowances: v.array(
+      v.object({
+        label: v.string(),
+        amountCents: v.number(),
+        // A travel or meal allowance is normally NOT EPF-liable. Charging EPF on
+        // it takes money from both sides that neither owes.
+        epfLiable: v.boolean(),
+      }),
+    ),
+    effectiveFrom: v.string(), // "YYYY-MM-DD"
+  })
+    .index("by_member", ["memberId"])
+    .index("by_org", ["orgId"]),
+
+  payRuns: defineTable({
+    orgId: v.id("organizations"),
+    period: v.string(), // "YYYY-MM"
+    // A finalised run is immutable. Correcting it means a new run, so the
+    // original payslip an employee was shown never changes under them.
+    status: v.union(v.literal("draft"), v.literal("finalised")),
+    totals: v.object({
+      headcount: v.number(),
+      grossCents: v.number(),
+      epfEmployeeCents: v.number(),
+      epfEmployerCents: v.number(),
+      etfEmployerCents: v.number(),
+      payeCents: v.number(),
+      otherDeductionsCents: v.number(),
+      netCents: v.number(),
+      employerCostCents: v.number(),
+    }),
+    finalisedAt: v.optional(v.number()),
+    finalisedBy: v.optional(v.id("members")),
+  })
+    .index("by_org_period", ["orgId", "period"])
+    .index("by_org", ["orgId"]),
+
+  payslips: defineTable({
+    orgId: v.id("organizations"),
+    payRunId: v.id("payRuns"),
+    memberId: v.id("members"),
+    period: v.string(),
+    basicCents: v.number(),
+    allowancesCents: v.number(),
+    unpaidLeaveDays: v.number(),
+    unpaidLeaveDeductionCents: v.number(),
+    otHours: v.number(),
+    otPayCents: v.number(),
+    grossCents: v.number(),
+    epfEmployeeCents: v.number(),
+    epfEmployerCents: v.number(),
+    etfEmployerCents: v.number(),
+    payeCents: v.number(),
+    payeCalculated: v.boolean(),
+    otherDeductionsCents: v.number(),
+    totalDeductionsCents: v.number(),
+    netCents: v.number(),
+    employerCostCents: v.number(),
+  })
+    .index("by_run", ["payRunId"])
+    .index("by_member", ["memberId"])
+    .index("by_member_period", ["memberId", "period"]),
+
+  // Queued outbound email. A row, not a direct send, so a failed provider call
+  // retries instead of silently losing "your leave was approved".
+  emailQueue: defineTable({
+    orgId: v.optional(v.id("organizations")),
+    to: v.string(),
+    subject: v.string(),
+    body: v.string(), // plain text; the action wraps it
+    kind: v.string(), // "leave.requested" | "leave.reviewed" | ...
+    status: v.union(v.literal("pending"), v.literal("sent"), v.literal("failed")),
+    attempts: v.number(),
+    lastError: v.optional(v.string()),
+    sentAt: v.optional(v.number()),
+  })
+    .index("by_status", ["status"])
+    .index("by_org", ["orgId"]),
+
   auditLogs: defineTable({
     orgId: v.optional(v.id("organizations")),
     actorClerkUserId: v.optional(v.string()),

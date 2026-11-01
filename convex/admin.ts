@@ -34,6 +34,25 @@ export const todayBoard = query({
       .withIndex("by_org_date", (q) => q.eq("orgId", orgId).eq("workDate", date))
       .collect();
 
+    // Who is legitimately away today. Without this, somebody on approved leave
+    // shows up flagged exactly like a no-show, which is the fastest way for an
+    // admin to stop trusting the board.
+    const onLeave = new Map<string, string>();
+    for (const l of await ctx.db
+      .query("leaveRequests")
+      .withIndex("by_org_start", (q) => q.eq("orgId", orgId).lte("startDate", date))
+      .collect()) {
+      if (l.status === "approved" && l.endDate >= date) {
+        const type = await ctx.db.get(l.leaveTypeId);
+        onLeave.set(l.memberId, type?.name ?? "Leave");
+      }
+    }
+
+    const isHoliday = await ctx.db
+      .query("holidays")
+      .withIndex("by_org_date", (q) => q.eq("orgId", orgId).eq("date", date))
+      .first();
+
     const byMember = new Map<string, typeof todays>();
     for (const r of todays) {
       const list = byMember.get(r.memberId) ?? [];
@@ -49,8 +68,11 @@ export const todayBoard = query({
       const open = records.find((r) => r.clockOutAt === undefined);
       const totalMs = records.reduce((sum, r) => sum + workedMs(r, now), 0);
 
-      let state: "in" | "out" | "absent" | "missing_clock_out";
-      if (records.length === 0) state = "absent";
+      let state: "in" | "out" | "absent" | "missing_clock_out" | "on_leave";
+      // Leave wins over absence, but not over a real clock-in: somebody who came
+      // in anyway is in, and that is worth seeing.
+      if (records.length === 0 && onLeave.has(m._id)) state = "on_leave";
+      else if (records.length === 0) state = "absent";
       else if (open) {
         state = isMissedClockOut(open, now, org.timezone) ? "missing_clock_out" : "in";
       } else state = "out";
@@ -64,6 +86,7 @@ export const todayBoard = query({
         since: open?.clockInAt ?? null,
         totalMs,
         sessions: records.length,
+        leaveType: onLeave.get(m._id) ?? null,
         // Anything an admin may need to look at: out of range, bad accuracy, or a
         // mock-location flag on either end of any session today.
         flagged: records.some(
@@ -79,10 +102,12 @@ export const todayBoard = query({
       timezone: org.timezone,
       serverNow: now,
       pastExpectedEnd: pastEnd,
+      holidayName: isHoliday?.name ?? null,
       counts: {
         employees: rows.length,
         in: rows.filter((r) => r.state === "in").length,
         out: rows.filter((r) => r.state === "out").length,
+        onLeave: rows.filter((r) => r.state === "on_leave").length,
         absent: rows.filter((r) => r.state === "absent").length,
         late: rows.filter((r) => r.isLate).length,
         missingClockOut: rows.filter((r) => r.state === "missing_clock_out").length,

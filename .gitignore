@@ -51,3 +51,6 @@ yarn-error.*
 !.env.example
 web/.next/
 web/node_modules/
+
+# agent skills installed locally by npx skills add
+.agents/

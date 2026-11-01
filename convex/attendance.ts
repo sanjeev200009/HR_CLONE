@@ -105,6 +105,16 @@ export const clockIn = mutation({
     const workplace = member.workplaceId ? await ctx.db.get(member.workplaceId) : null;
     const clockInFix = verdict(fix, workplace, org.maxAccuracyM);
 
+    // Holidays and weekends are never late — see lib/time.ts isLate.
+    const holidays = new Set(
+      (
+        await ctx.db
+          .query("holidays")
+          .withIndex("by_org", (q) => q.eq("orgId", orgId))
+          .collect()
+      ).map((h) => h.date),
+    );
+
     const id = await ctx.db.insert("attendance", {
       orgId,
       memberId: member._id,
@@ -112,7 +122,7 @@ export const clockIn = mutation({
       workDate: workDate(at, org.timezone),
       clockInAt: at,
       clockIn: clockInFix,
-      isLate: isLate(at, org),
+      isLate: isLate(at, org, holidays),
       device,
     });
 

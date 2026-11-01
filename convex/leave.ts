@@ -2,6 +2,7 @@ import { mutation, query, QueryCtx, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
 import { requireMember, requireOrgAdmin } from "./lib/guard";
+import { enqueue, templates } from "./email";
 import { workDate } from "./lib/time";
 import {
   countLeaveDays,
@@ -197,6 +198,32 @@ export const request = mutation({
     });
 
     await recompute(ctx, member._id, leaveTypeId, year, org);
+
+    // Tell the admins there is something to approve. Queued, so a mail problem
+    // can never fail the request itself.
+    if (type.requiresApproval) {
+      const admins = (
+        await ctx.db
+          .query("members")
+          .withIndex("by_org", (q) => q.eq("orgId", orgId))
+          .collect()
+      ).filter((m) => m.role === "admin" && m.isActive && m._id !== member._id);
+
+      for (const a of admins) {
+        const mail = templates.leaveRequested({
+          adminName: a.fullName,
+          employeeName: member.fullName,
+          typeName: type.name,
+          startDate,
+          endDate,
+          days,
+          reason: reason.trim(),
+          orgName: org.name,
+        });
+        await enqueue(ctx, { orgId, to: a.email, kind: "leave.requested", ...mail });
+      }
+    }
+
     return id;
   },
 });
@@ -393,6 +420,33 @@ export const review = mutation({
       days: r.days,
       range: `${r.startDate}..${r.endDate}`,
     });
+
+    // Tell the employee. The balance quoted is read AFTER recompute, so the
+    // number in the email is the number they will see in the app.
+    const employee = await ctx.db.get(r.memberId);
+    const type = await ctx.db.get(r.leaveTypeId);
+    if (employee && type) {
+      const year = leaveYearOf(r.startDate, org.leaveYearStartMonth ?? 1);
+      const balance = await ctx.db
+        .query("leaveBalances")
+        .withIndex("by_member_type_year", (q) =>
+          q.eq("memberId", r.memberId).eq("leaveTypeId", r.leaveTypeId).eq("year", year),
+        )
+        .unique();
+
+      const mail = templates.leaveReviewed({
+        employeeName: employee.fullName,
+        typeName: type.name,
+        startDate: r.startDate,
+        endDate: r.endDate,
+        days: r.days,
+        approved: approve,
+        note: note?.trim() || undefined,
+        remainingDays: balance ? availableDays(balance) : 0,
+        orgName: org.name,
+      });
+      await enqueue(ctx, { orgId, to: employee.email, kind: "leave.reviewed", ...mail });
+    }
   },
 });
 

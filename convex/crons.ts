@@ -47,4 +47,8 @@ crons.hourly(
 // Daily is enough: a subscription that lapsed at 00:30 is caught at 01:00 UTC.
 crons.cron("expire lapsed subscriptions", "0 1 * * *", internal.crons.expireSubscriptions);
 
+// Email is queued by mutations and sent here. Every 2 minutes, because "your
+// leave was approved" arriving an hour late is the same as not arriving.
+crons.interval("send queued email", { minutes: 2 }, internal.email.drain);
+
 export default crons;

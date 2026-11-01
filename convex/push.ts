@@ -45,15 +45,18 @@ export const register = mutation({
  * local-time idea, so this runs hourly and asks each org whether its own clock has
  * passed expectedEnd + 60min. One sweep, every timezone, no per-org scheduling.
  */
+type DueReminder = { attendanceId: Id<"attendance">; tokens: string[]; orgName: string };
+
 export const dueReminders = internalQuery({
   args: {},
-  handler: async (ctx) => {
+  // Explicit return type: sweepReminders calls this from the same file.
+  handler: async (ctx): Promise<DueReminder[]> => {
     const now = Date.now();
     const orgs = (await ctx.db.query("organizations").collect()).filter(
       (o) => o.status === "active",
     );
 
-    const due: { attendanceId: Id<"attendance">; tokens: string[]; orgName: string }[] = [];
+    const due: DueReminder[] = [];
 
     for (const org of orgs) {
       const localMin = minutesIntoDay(now, org.timezone);
@@ -118,8 +121,8 @@ export const removeToken = internalMutation({
  */
 export const sweepReminders = internalAction({
   args: {},
-  handler: async (ctx) => {
-    const due = await ctx.runQuery(internal.push.dueReminders, {});
+  handler: async (ctx): Promise<{ sent: number }> => {
+    const due: DueReminder[] = await ctx.runQuery(internal.push.dueReminders, {});
     if (due.length === 0) return { sent: 0 };
 
     let sent = 0;
