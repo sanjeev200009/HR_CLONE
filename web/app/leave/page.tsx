@@ -8,6 +8,7 @@ import Shell, { useOrg } from "../components/Shell";
 import { INPUT, BUTTON, BUTTON_QUIET, Field, Th, clean } from "../components/ui";
 import { todayIso } from "../lib/format";
 import LeaveTimeline from "../components/LeaveTimeline";
+import { downloadCsv, slug } from "../lib/csv";
 
 export default function Page() {
   return (
@@ -56,7 +57,7 @@ function Leave() {
 }
 
 function Requests() {
-  const { orgId } = useOrg();
+  const { orgId, orgName } = useOrg();
   const [status, setStatus] = useState<"pending" | "approved" | "rejected" | "cancelled">("pending");
   const rows = useQuery(api.leave.pending, { orgId, status });
   const review = useMutation(api.leave.review);
@@ -72,9 +73,31 @@ function Requests() {
     }
   }
 
+  function exportCsv() {
+    if (!rows || rows.length === 0) return;
+    const header = [
+      "Employee", "Email", "Leave type", "From", "To", "Days", "Half day",
+      "Status", "Reason", "Reviewed at", "Review note",
+    ];
+    const body = rows.map((r) => [
+      r.fullName,
+      r.email,
+      r.typeName,
+      r.startDate,
+      r.endDate,
+      r.days,
+      r.halfDay ?? "",
+      r.status,
+      r.reason,
+      r.reviewedAt ? new Date(r.reviewedAt).toISOString().slice(0, 10) : "",
+      r.reviewNote ?? "",
+    ]);
+    downloadCsv([header, ...body], `leave-${slug(orgName)}-${status}.csv`);
+  }
+
   return (
     <>
-      <div className="mb-3 flex gap-1">
+      <div className="mb-3 flex items-center gap-1">
         {(["pending", "approved", "rejected", "cancelled"] as const).map((s) => (
           <button
             key={s}
@@ -86,6 +109,13 @@ function Requests() {
             {s}
           </button>
         ))}
+        <button
+          className={`${BUTTON_QUIET} ml-auto`}
+          disabled={!rows || rows.length === 0}
+          onClick={exportCsv}
+        >
+          Export CSV
+        </button>
       </div>
       {error && <p className="mb-3 text-sm text-[var(--negative)]">{error}</p>}
 

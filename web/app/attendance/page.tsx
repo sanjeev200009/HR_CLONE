@@ -7,6 +7,7 @@ import { Id } from "@convex/_generated/dataModel";
 import Shell, { useOrg } from "../components/Shell";
 import { INPUT, BUTTON, BUTTON_QUIET, Field, Th, clean } from "../components/ui";
 import { time, duration, todayIso, monthStartIso } from "../lib/format";
+import { downloadCsv as writeCsv, slug } from "../lib/csv";
 
 export default function Page() {
   return (
@@ -170,13 +171,7 @@ function Verification({
   return <div className="text-[var(--warning)]">{label}: {words[status] ?? status}</div>;
 }
 
-/**
- * CSV built and downloaded in the browser from the rows already on screen.
- *
- * No server endpoint, no file storage, no extra dependency — the data is here and
- * the browser can save it. Excel export is deliberately out of the MVP; Excel opens
- * CSV.
- */
+/** Build the attendance report rows and hand them to the shared CSV writer. */
 function downloadCsv(
   rows: NonNullable<ReturnType<typeof useQuery<typeof api.admin.attendanceRange>>>,
   timezone: string,
@@ -210,30 +205,5 @@ function downloadCsv(
     r.device ?? "",
   ]);
 
-  const csv = [header, ...body]
-    .map((cols) => cols.map(csvCell).join(","))
-    .join("\r\n"); // CRLF: Excel on Windows is the audience
-
-  // BOM, or Excel mangles non-ASCII names in Sinhala/Tamil.
-  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `attendance-${slug(orgName)}-${from}-to-${to}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
+  writeCsv([header, ...body], `attendance-${slug(orgName)}-${from}-to-${to}.csv`);
 }
-
-/**
- * Quote every cell and neutralise formula injection.
- *
- * A name or reason beginning = + - @ is executed by Excel on open. An employee can
- * type their own correction reason, so this is reachable user input, not paranoia.
- */
-function csvCell(value: string | number) {
-  const s = String(value);
-  const safe = /^[=+\-@\t\r]/.test(s) ? `'${s}` : s;
-  return `"${safe.replace(/"/g, '""')}"`;
-}
-
-const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");

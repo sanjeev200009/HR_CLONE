@@ -21,6 +21,14 @@ function Directory() {
   const [open, setOpen] = useState<Id<"members"> | null>(null);
   const people = useQuery(api.directory.list, { orgId, search: search || undefined });
   const written = useQuery(api.feedback.mine, { orgId });
+  const withdraw = useMutation(api.feedback.withdraw);
+  // One query for every avatar on screen, not one per card.
+  const avatarIds = (people ?? []).map((p) => p.avatarStorageId).filter(Boolean) as Id<"_storage">[];
+  const avatars = useQuery(
+    api.directory.avatarUrls,
+    avatarIds.length > 0 ? { orgId, ids: avatarIds } : "skip",
+  );
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <>
@@ -54,13 +62,27 @@ function Directory() {
       {(written ?? []).length > 0 && (
         <>
           <h2 className="mt-10 text-[16px] font-semibold">Feedback you have given</h2>
+          {error && <p className="mt-2 text-[14px] text-[var(--negative)]">{error}</p>}
           <ul className="mt-3 space-y-3">
             {(written ?? []).map((w) => (
               <li key={w._id} className="card p-4 text-[14px]">
-                <p className="text-[12px] text-[var(--muted)]">
-                  To {w.toName} · {w.visibility}
-                  {w.isAnonymous ? " · anonymous to them" : ""}
-                </p>
+                <div className="flex items-start justify-between gap-4">
+                  <p className="text-[12px] text-[var(--muted)]">
+                    To {w.toName} · {w.visibility}
+                    {w.isAnonymous ? " · anonymous to them" : ""}
+                  </p>
+                  {/* Only the author can withdraw their own; an admin cannot
+                      quietly delete feedback about themselves. */}
+                  <button
+                    className="shrink-0 text-[12px] underline"
+                    style={{ color: "var(--accent-ink)" }}
+                    onClick={() =>
+                      withdraw({ orgId, feedbackId: w._id }).catch((e) => setError(clean(e)))
+                    }
+                  >
+                    Withdraw
+                  </button>
+                </div>
                 <p className="mt-1">{w.body}</p>
               </li>
             ))}
@@ -237,6 +259,31 @@ function Profile({ memberId, onClose }: { memberId: Id<"members">; onClose: () =
         )}
       </div>
     </div>
+  );
+}
+
+/**
+ * A person's face, or their initial on a stable tint of their own.
+ *
+ * The tint is derived from the name, so the same person keeps the same colour
+ * everywhere. Per the style sheet these tints are identity, not data: they stay
+ * pale and never appear in a chart legend.
+ */
+function Avatar({ name, url }: { name: string; url: string | null }) {
+  if (url) {
+    // eslint-disable-next-line @next/next/no-img-element -- Convex storage URLs are not a configured next/image domain
+    return <img src={url} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover" />;
+  }
+  let h = 0;
+  for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) % 360;
+  return (
+    <span
+      aria-hidden="true"
+      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[15px] font-semibold"
+      style={{ background: `hsl(${h} 70% 93%)`, color: `hsl(${h} 45% 30%)` }}
+    >
+      {name.trim().charAt(0).toUpperCase() || "?"}
+    </span>
   );
 }
 
