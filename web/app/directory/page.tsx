@@ -20,6 +20,7 @@ function Directory() {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState<Id<"members"> | null>(null);
   const people = useQuery(api.directory.list, { orgId, search: search || undefined });
+  const written = useQuery(api.feedback.mine, { orgId });
 
   return (
     <>
@@ -48,6 +49,24 @@ function Directory() {
         ))}
         {people?.length === 0 && <p className="text-[var(--muted)]">Nobody matches that.</p>}
       </div>
+
+      {/* What you have written, so feedback is not a thing you send into a void. */}
+      {(written ?? []).length > 0 && (
+        <>
+          <h2 className="mt-10 text-[16px] font-semibold">Feedback you have given</h2>
+          <ul className="mt-3 space-y-3">
+            {(written ?? []).map((w) => (
+              <li key={w._id} className="card p-4 text-[14px]">
+                <p className="text-[12px] text-[var(--muted)]">
+                  To {w.toName} · {w.visibility}
+                  {w.isAnonymous ? " · anonymous to them" : ""}
+                </p>
+                <p className="mt-1">{w.body}</p>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
       {open && <Profile memberId={open} onClose={() => setOpen(null)} />}
     </>

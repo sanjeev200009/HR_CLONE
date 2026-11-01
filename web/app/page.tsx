@@ -38,6 +38,8 @@ function Overview() {
   const pendingLeave = useQuery(api.leave.pending, { orgId, status: "pending" });
   const pendingSheets = useQuery(api.timesheets.list, { orgId, status: "submitted" });
   const pendingFixes = useQuery(api.corrections.list, { orgId, status: "pending" });
+  const year = new Date().getUTCFullYear();
+  const leaveYear = useQuery(api.leave.calendar, { orgId, from: `${year}-01-01`, to: `${year}-12-31` });
 
   if (board === undefined) return <p className="text-[var(--muted)]">Loading…</p>;
 
@@ -118,7 +120,17 @@ function Overview() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_384px]">
         <div className="min-w-0">
-          <SectionHead>Who is in</SectionHead>
+          <SectionHead
+            action={
+              board.rows.length > 6 ? (
+                <Link href="/attendance" className="text-[13px] underline" style={{ color: "var(--accent-ink)" }}>
+                  View all {board.rows.length}
+                </Link>
+              ) : undefined
+            }
+          >
+            Who is in
+          </SectionHead>
           <div className="card overflow-x-auto">
             <table className="tbl">
               <thead>
@@ -141,7 +153,9 @@ function Overview() {
                     </td>
                   </tr>
                 )}
-                {board.rows.map((r) => (
+                {/* Capped at 6: the sheet caps an overview list and links to the
+                    full one, which also keeps this row level with the rail. */}
+                {board.rows.slice(0, 6).map((r) => (
                   <tr key={r.memberId}>
                     <td>
                       <div className="font-medium">{r.fullName}</div>
@@ -169,6 +183,40 @@ function Overview() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          <SectionHead>Leave taken</SectionHead>
+          <div className="card px-4 py-4">
+            {leaveYear === undefined ? (
+              <Empty>Loading…</Empty>
+            ) : (
+              (() => {
+                // Days taken against what the team could take. Both sides come
+                // from the rows on screen, never a separately-held figure.
+                const taken = leaveYear.reduce((sum, l) => sum + l.days, 0);
+                const capacity = counts.employees * 14;
+                const used = capacity > 0 ? Math.min(100, (taken / capacity) * 100) : 0;
+                return (
+                  <>
+                    <p className="text-[12px] text-[var(--muted)]">Company-wide, {year}</p>
+                    <div className="mt-1 text-[24px] tnum">
+                      {taken}{" "}
+                      <span className="text-[14px] text-[var(--muted)]">
+                        of about {capacity} days
+                      </span>
+                    </div>
+                    <div className="track mt-2">
+                      <span style={{ width: `${used}%` }} />
+                    </div>
+                    <p className="mt-2 text-[12px] text-[var(--muted)]">
+                      {capacity === 0
+                        ? "No employees yet."
+                        : `${Math.round(used)}% of the usual annual allowance across ${counts.employees} ${counts.employees === 1 ? "person" : "people"}.`}
+                    </p>
+                  </>
+                );
+              })()
+            )}
           </div>
         </div>
 

@@ -122,3 +122,43 @@ exists to undercut, and throws away the §15 differentiator.
 ## Rules engine (MVP = 4 settings per org)
 `expectedStart`, `graceMinutes`, `expectedEnd`, `minHours`. Late = clock_in > start + grace.
 Missing clock-out = open record past midnight → flagged, not auto-closed.
+
+## Design direction (2026-11-01)
+
+Dealt with `Leonxlnx/taste-skill` -> `design-taste-frontend`, app-screen run.
+Style: **accent-ladder**. Sheet saved at `docs/design-direction.json`.
+
+Chosen because this product IS small-business admin with plans, and the areas
+that need tint are exactly leave-balance tracks, state badges and plan cards.
+`framed-sheet`, the other option dealt, aims at developer platforms.
+
+Face: the ground one step toward the hue's palest tint (#fbf7f8). Mark: a clock
+face with the hand at nine, the moment a working day starts.
+
+Signature element built: `leave-timeline` on /leave, in React rather than the
+skill's imperative `Charts.timeline()` — that helper is a vanilla IIFE expecting
+`window.Charts`, and wiring it into React-managed DOM needs a script tag, a load
+race and a cleanup path for a view we render directly. The marks follow the
+sheet's spec: every kind its own mark, full colour only for a pending request.
+
+### Verification
+`lint.mjs`: 0 FAIL, 0 WARN.
+`inspect.mjs docs/design-harness.html`: 0 FAIL, 1 WARN.
+
+The harness exists because every real route sits behind Clerk auth and renders
+from live Convex queries, so the inspector cannot reach one until the Clerk
+Convex JWT template is activated. It carries the same tokens, markup shapes and
+type scale, so it verifies the DESIGN SYSTEM, not the live pages.
+
+**The one WARN, defended:** `ragged-row` — the board and the rail end 252px
+apart. The sheet's own overview pattern makes the block carrying the screen's
+question the largest, and it explicitly says "do not stretch a short card to its
+neighbour's height (it left 250px of dead white)". Row count varies with
+headcount, so any fixed balance is false precision. Already mitigated the way the
+sheet prescribes: the overview list is capped at 6 rows with "View all".
+
+### Found by looking at the render, not by the meter
+The first screenshot showed ~400px of dead white where the rail should be: a
+block-move had nested the rail inside the main column. Measurements had gone
+*green* because one card alone in a row cannot be a ragged pair. The render is
+the check that caught it.

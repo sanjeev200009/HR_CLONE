@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import Shell, { useOrg } from "../components/Shell";
-import { INPUT, BUTTON, Field, clean } from "../components/ui";
+import { INPUT, BUTTON, BUTTON_QUIET, Field, clean } from "../components/ui";
 
 export default function Page() {
   return (
@@ -21,6 +21,7 @@ function Employees() {
   const workplaces = useQuery(api.workplaces.list, { orgId });
   const departments = useQuery(api.employees.departments, { orgId });
   const invite = useMutation(api.employees.invite);
+  const createDepartment = useMutation(api.employees.createDepartment);
   const update = useMutation(api.employees.update);
 
   const [form, setForm] = useState({
@@ -33,6 +34,7 @@ function Employees() {
   });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [newDept, setNewDept] = useState("");
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -137,6 +139,33 @@ function Employees() {
               </option>
             ))}
           </select>
+          {/* Departments could be assigned but never created, so this dropdown
+              was permanently empty. */}
+          <span className="mt-2 flex gap-2">
+            <input
+              className={INPUT}
+              value={newDept}
+              onChange={(e) => setNewDept(e.target.value)}
+              placeholder="Add a department"
+            />
+            <button
+              type="button"
+              className={BUTTON_QUIET}
+              disabled={!newDept.trim()}
+              onClick={async () => {
+                setError(null);
+                try {
+                  const id = await createDepartment({ orgId, name: newDept });
+                  setForm({ ...form, departmentId: id });
+                  setNewDept("");
+                } catch (e) {
+                  setError(clean(e));
+                }
+              }}
+            >
+              Add
+            </button>
+          </span>
         </Field>
 
         <div className="sm:col-span-3">

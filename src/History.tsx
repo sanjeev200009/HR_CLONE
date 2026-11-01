@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { Id } from "../convex/_generated/dataModel";
 import { s, c } from "./ui";
+import Week from "./Week";
 
 // Attendance history, plus the one write an employee is allowed to make about a
 // past day: asking an admin to correct it.
@@ -57,11 +58,16 @@ export default function History({ orgId, timezone }: Props) {
 
   return (
     <View style={s.screen}>
-      <Text style={s.h1}>My attendance</Text>
-      <Text style={s.muted}>Last {rows.length} days</Text>
-
       <FlatList
         data={rows}
+        ListHeaderComponent={
+          <>
+            <Text style={s.h1}>My hours</Text>
+            <Text style={s.muted}>This week, then every day recorded.</Text>
+            <Week orgId={orgId} />
+            <Text style={s.h2}>History</Text>
+          </>
+        }
         keyExtractor={(r) => r._id}
         ListEmptyComponent={<Text style={s.muted}>Nothing recorded yet.</Text>}
         renderItem={({ item }) => {

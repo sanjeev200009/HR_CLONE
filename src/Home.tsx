@@ -91,7 +91,7 @@ export default function Home() {
         {tab === "history" && <History orgId={m.orgId} timezone={m.timezone} />}
         {tab === "leave" && <Leave orgId={m.orgId} timezone={m.timezone} />}
         {tab === "pay" && <Pay orgId={m.orgId} />}
-        {tab === "team" && <Team orgId={m.orgId} />}
+        {tab === "team" && <Team orgId={m.orgId} me={{ fullName: m.fullName }} />}
       </View>
 
       {/* Four tabs now. Still a state switch rather than expo-router: there is

@@ -7,6 +7,7 @@ import { Id } from "@convex/_generated/dataModel";
 import Shell, { useOrg } from "../components/Shell";
 import { INPUT, BUTTON, BUTTON_QUIET, Field, Th, clean } from "../components/ui";
 import { todayIso } from "../lib/format";
+import LeaveTimeline from "../components/LeaveTimeline";
 
 export default function Page() {
   return (
@@ -148,36 +149,82 @@ function Requests() {
 function Calendar() {
   const { orgId, timezone } = useOrg();
   const [from, setFrom] = useState(() => todayIso(timezone));
-  const [to, setTo] = useState(() => addDays(todayIso(timezone), 60));
+  const [to, setTo] = useState(() => addDays(todayIso(timezone), 27));
   const rows = useQuery(api.leave.calendar, { orgId, from, to });
+  const settings = useQuery(api.settings.get, { orgId });
+  const holidays = useQuery(api.leave.holidays, { orgId });
+  const types = useQuery(api.leave.types, { orgId });
+  const pending = useQuery(api.leave.pending, { orgId, status: "pending" });
+
+  const today = todayIso(timezone);
+  const paidByType = new Map((types ?? []).map((t) => [t.name, t.isPaid]));
+
+  // One row per person, their bookings grouped. Approved leave and pending
+  // requests share the timeline, because the question an admin has is "who is
+  // away, and what is still undecided".
+  const byPerson = new Map<
+    string,
+    { memberId: string; fullName: string; bookings: { id: string; startDate: string; endDate: string; label: string; kind: "paid" | "unpaid" | "pending" }[] }
+  >();
+
+  for (const r of rows ?? []) {
+    const e = byPerson.get(r.fullName) ?? { memberId: r.fullName, fullName: r.fullName, bookings: [] };
+    e.bookings.push({
+      id: r._id,
+      startDate: r.startDate,
+      endDate: r.endDate,
+      label: r.typeName,
+      kind: paidByType.get(r.typeName) === false ? "unpaid" : "paid",
+    });
+    byPerson.set(r.fullName, e);
+  }
+  for (const p of pending ?? []) {
+    if (p.endDate < from || p.startDate > to) continue;
+    const e = byPerson.get(p.fullName) ?? { memberId: p.fullName, fullName: p.fullName, bookings: [] };
+    e.bookings.push({
+      id: p._id,
+      startDate: p.startDate,
+      endDate: p.endDate,
+      label: p.typeName,
+      kind: "pending",
+    });
+    byPerson.set(p.fullName, e);
+  }
+
+  const timelineRows = [...byPerson.values()].sort((a, b) => a.fullName.localeCompare(b.fullName));
+  const awayToday = timelineRows.filter((r) =>
+    r.bookings.some((b) => b.kind !== "pending" && b.startDate <= today && b.endDate >= today),
+  ).length;
 
   return (
     <>
-      <div className="mb-3 flex gap-3">
-        <Field label="From"><input type="date" className={INPUT} value={from} onChange={(e) => setFrom(e.target.value)} /></Field>
-        <Field label="To"><input type="date" className={INPUT} value={to} onChange={(e) => setTo(e.target.value)} /></Field>
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h2 className="text-[16px] font-semibold">Who is off</h2>
+          {/* The finding, beside the thing it is about. */}
+          <p className="mt-1 text-[14px] text-[var(--muted)]">
+            {awayToday === 0
+              ? "Nobody is off today."
+              : `${awayToday} ${awayToday === 1 ? "person is" : "people are"} off today.`}
+            {(pending ?? []).length > 0
+              ? ` ${(pending ?? []).length} request${(pending ?? []).length === 1 ? "" : "s"} still undecided.`
+              : ""}
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <Field label="From"><input type="date" className={INPUT} value={from} onChange={(e) => setFrom(e.target.value)} /></Field>
+          <Field label="To"><input type="date" className={INPUT} value={to} onChange={(e) => setTo(e.target.value)} /></Field>
+        </div>
       </div>
-      <div className="card overflow-x-auto">
-        <table className="tbl">
-          <thead className="">
-            <tr><Th>Employee</Th><Th>Type</Th><Th>From</Th><Th>To</Th><Th>Days</Th></tr>
-          </thead>
-          <tbody>
-            {(rows ?? []).map((r) => (
-              <tr key={r._id} className="">
-                <td className="font-medium">{r.fullName}</td>
-                <td className="">{r.typeName}</td>
-                <td className="num">{r.startDate}</td>
-                <td className="num">{r.endDate}</td>
-                <td className="num">{r.days}{r.halfDay ? ` (${r.halfDay})` : ""}</td>
-              </tr>
-            ))}
-            {rows?.length === 0 && (
-              <tr><td colSpan={5} className="px-4 py-8 text-[var(--muted)]">Nobody is off in that window.</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+
+      <LeaveTimeline
+        rows={timelineRows}
+        from={from}
+        to={to}
+        today={today}
+        weekendDays={settings?.weekendDays ?? [0, 6]}
+        holidays={(holidays ?? []).filter((h) => h.date >= from && h.date <= to)}
+      />
     </>
   );
 }

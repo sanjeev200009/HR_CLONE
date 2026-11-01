@@ -11,23 +11,39 @@ import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { Id } from "../convex/_generated/dataModel";
 import { s, c } from "./ui";
+import MyProfile from "./MyProfile";
 
 // Company directory. Read-only on mobile on purpose: giving feedback is a
 // considered act, and a phone list is where you look someone up, not where you
 // write an appraisal. The web dashboard has the full feedback flow.
 
-type Props = { orgId: Id<"organizations"> };
+type Props = { orgId: Id<"organizations">; me: { fullName: string } };
 
-export default function Team({ orgId }: Props) {
+export default function Team({ orgId, me }: Props) {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState<Id<"members"> | null>(null);
+  const [editing, setEditing] = useState(false);
   const people = useQuery(api.directory.list, { orgId, search: search || undefined });
 
+  if (editing) {
+    return (
+      <MyProfile
+        orgId={orgId}
+        initial={{ fullName: me.fullName, phone: null, about: null, emergencyContact: null }}
+        onDone={() => setEditing(false)}
+      />
+    );
+  }
   if (open) return <Person orgId={orgId} memberId={open} onBack={() => setOpen(null)} />;
 
   return (
     <View style={s.screen}>
-      <Text style={s.h1}>Team</Text>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" }}>
+        <Text style={s.h1}>Team</Text>
+        <TouchableOpacity onPress={() => setEditing(true)}>
+          <Text style={{ color: c.link, fontSize: 15, paddingBottom: 6 }}>My profile</Text>
+        </TouchableOpacity>
+      </View>
       <TextInput
         style={s.input}
         value={search}

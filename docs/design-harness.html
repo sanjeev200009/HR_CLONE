@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AttendanceHR — design harness</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  A static copy of the overview screen, for the taste-skill inspector.
+
+  Why this exists: every real route sits behind Clerk auth and renders from live
+  Convex queries, so inspect.mjs cannot reach one until the Clerk Convex JWT
+  template is activated. This harness carries the SAME tokens, the same markup
+  shapes and the same type scale, so the measurable house rules (colour budget,
+  shadow, type sizes, hue on data, table treatment) can be checked now.
+
+  It verifies the design system. It does not verify the live pages.
+
+  The data below is realistic for a new Sri Lankan customer: 9 employees, small
+  numbers drawn honestly at their real size. Every total is the sum of the rows.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#fbf7f8; --surface:#fff; --raised:#f3f4f6; --border:#e5e7eb; --rule:#f2f2f2;
+  --control:#d1d5db; --text:#111827; --muted:#5f6672;
+  --accent:#b8336a; --accent-soft:#fdf2f7; --accent-track:#f8dbe8; --accent-ink:#6b1d3e;
+  --positive:#247b50; --negative:#c4242a; --warning:#92400e;
+  --pill-positive-bg:#dcfce7; --pill-positive-ink:#14532d;
+  --pill-negative-bg:#ffedea; --pill-negative-ink:#831c1e;
+  --pill-warning-bg:#fffbeb; --pill-warning-ink:#92400e;
+  --pill-neutral-bg:#f3f4f6; --pill-neutral-ink:#374151;
+  --pill-accent-bg:#fdf2f7; --pill-accent-ink:#6b1d3e;
+  --sidebar-width:230px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"DM Sans",Inter,system-ui,sans-serif;background:var(--ground);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased}
+table,.tnum{font-variant-numeric:tabular-nums}
+.shell{display:flex;min-height:100vh}
+aside{width:var(--sidebar-width);flex-shrink:0;border-right:1px solid var(--rule)}
+.brand{display:flex;align-items:center;gap:8px;height:64px;padding:0 24px;font-size:15px;font-weight:600}
+nav{padding:0 12px 32px}
+.grp{padding:0 12px 4px;font-size:12px;color:var(--muted);margin-top:20px}
+nav a{display:flex;align-items:center;height:40px;padding:0 12px;border-radius:6px;font-size:14px;color:var(--muted);text-decoration:none}
+nav a[aria-current=page]{background:var(--accent-soft);color:var(--accent-ink);font-weight:500}
+.col{flex:1;min-width:0;display:flex;flex-direction:column}
+header{display:flex;align-items:center;height:64px;padding:0 24px;border-bottom:1px solid var(--rule)}
+.right{margin-left:auto;display:flex;align-items:center;gap:16px;color:var(--muted)}
+.divider{width:1px;height:64px;background:var(--rule)}
+.avatar{width:28px;height:28px;border-radius:999px;background:var(--raised)}
+main{padding:28px 29px;flex:1}
+h1{font-size:24px;font-weight:600;line-height:1.2}
+.sub{margin-top:4px;font-size:14px;color:var(--muted)}
+.stamp{margin-top:16px;font-size:12px;color:var(--muted)}
+.btn{height:36px;padding:0 14px;border-radius:6px;font-size:14px;font-weight:500;background:var(--accent);color:#fff;border:1px solid var(--accent);cursor:pointer}
+.btn-quiet{height:36px;padding:0 14px;border-radius:6px;font-size:14px;font-weight:500;background:var(--surface);color:var(--text);border:1px solid var(--control);cursor:pointer}
+.titlerow{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px}
+.card.scroll{overflow-x:auto}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);margin-top:24px}
+.kpi{padding:16px 20px;border-left:1px solid var(--rule)}
+.kpi:first-child{border-left:0}
+.kpi .lab{font-size:14px;color:var(--muted)}
+.kpi .val{font-size:24px;margin-top:4px}
+.kpi .cap{font-size:12px;color:var(--muted);margin-top:4px}
+.cols{display:grid;grid-template-columns:1fr;gap:24px;margin-top:24px}
+.cols>div{min-width:0}
+@media(min-width:768px){.kpis{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1024px){.kpis{grid-template-columns:repeat(6,1fr)}.cols{grid-template-columns:1fr 384px}}
+@media(max-width:1023px){.kpi{border-left:0;border-top:1px solid var(--rule)}}
+aside{display:none}
+@media(min-width:768px){aside{display:block}}
+h2{font-size:16px;font-weight:600;margin:0 0 8px}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font-size:13px;font-weight:400;color:var(--muted);padding:8px 12px}
+.tbl td{padding:12px;border-top:1px solid var(--rule);font-size:14px;vertical-align:top}
+.tbl .num{text-align:right;font-variant-numeric:tabular-nums}
+.who{font-weight:500}
+.mail{font-size:12px;color:var(--muted)}
+.note{font-size:12px;color:var(--muted)}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap}
+.pill-positive{background:var(--pill-positive-bg);color:var(--pill-positive-ink)}
+.pill-negative{background:var(--pill-negative-bg);color:var(--pill-negative-ink)}
+.pill-warning{background:var(--pill-warning-bg);color:var(--pill-warning-ink)}
+.pill-neutral{background:var(--pill-neutral-bg);color:var(--pill-neutral-ink)}
+.pill-accent{background:var(--pill-accent-bg);color:var(--pill-accent-ink)}
+.queue a{display:flex;align-items:center;justify-content:space-between;height:45px;padding:0 16px;font-size:14px;color:var(--text);text-decoration:none;border-top:1px solid var(--rule)}
+.queue a:first-child{border-top:0}
+.track{height:6px;border-radius:999px;background:var(--accent-track);overflow:hidden;margin-top:8px}
+.track>span{display:block;height:100%;background:var(--accent)}
+.big{font-size:24px}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside>
+    <div class="brand">
+      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+        <circle cx="10" cy="10" r="8.25" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+        <path d="M10 10V5.5M10 10H6.4" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      AttendanceHR
+    </div>
+    <nav>
+      <div class="grp">Today</div>
+      <a href="#" aria-current="page">Who is in</a>
+      <a href="#">Attendance</a>
+      <a href="#">Timesheets</a>
+      <div class="grp">People</div>
+      <a href="#">Leave</a>
+      <a href="#">Directory</a>
+      <a href="#">Employees</a>
+      <div class="grp">Company</div>
+      <a href="#">Payroll</a>
+      <a href="#">Workplaces</a>
+      <a href="#">Corrections</a>
+      <a href="#">Settings</a>
+    </nav>
+  </aside>
+
+  <div class="col">
+    <header>
+      <div class="right">
+        <span>Ceylon Textiles (Pvt) Ltd</span>
+        <span class="divider"></span>
+        <span class="avatar"></span>
+      </div>
+    </header>
+
+    <main>
+      <div class="titlerow">
+        <div>
+          <h1>Good day, Nimali</h1>
+          <p class="sub">2 people have no clock-out, so those days have no hours against them.</p>
+        </div>
+        <button class="btn">Review 4 waiting</button>
+      </div>
+      <p class="stamp">2026-11-01 · Asia/Colombo</p>
+
+      <div class="card kpis">
+        <div class="kpi"><div class="lab">On the payroll</div><div class="val tnum">9</div><div class="cap">active employees</div></div>
+        <div class="kpi"><div class="lab">Clocked in now</div><div class="val tnum" style="color:var(--positive)">5</div><div class="cap">right now</div></div>
+        <div class="kpi"><div class="lab">Clocked out</div><div class="val tnum">1</div><div class="cap">finished today</div></div>
+        <div class="kpi"><div class="lab">On leave</div><div class="val tnum">2</div><div class="cap">approved today</div></div>
+        <div class="kpi"><div class="lab">Late</div><div class="val tnum" style="color:var(--warning)">1</div><div class="cap">past the grace period</div></div>
+        <div class="kpi"><div class="lab">Not in yet</div><div class="val tnum">1</div><div class="cap">due by 09:00</div></div>
+      </div>
+
+      <div class="cols">
+        <div>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between"><h2>Who is in</h2><a href="#" style="font-size:13px;color:var(--accent-ink)">View all 9</a></div>
+          <div class="card scroll">
+            <table class="tbl">
+              <thead><tr><th>Employee</th><th>State</th><th class="num">Since</th><th class="num">Today</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td><div class="who">Nimali Perera</div><div class="mail">nimali@ceylontextiles.lk</div></td><td><span class="pill pill-positive">In</span></td><td class="num">08:52</td><td class="num">3h 14m</td><td class="note">-</td></tr>
+                <tr><td><div class="who">Kasun Fernando</div><div class="mail">kasun@ceylontextiles.lk</div></td><td><span class="pill pill-positive">In</span></td><td class="num">09:26</td><td class="num">2h 40m</td><td class="note">late</td></tr>
+                <tr><td><div class="who">Dilani Jayawardena</div><div class="mail">dilani@ceylontextiles.lk</div></td><td><span class="pill pill-positive">In</span></td><td class="num">08:44</td><td class="num">3h 22m</td><td class="note">-</td></tr>
+                <tr><td><div class="who">Ruwan Silva</div><div class="mail">ruwan@ceylontextiles.lk</div></td><td><span class="pill pill-positive">In</span></td><td class="num">08:58</td><td class="num">3h 08m</td><td class="note">2 sessions</td></tr>
+                <tr><td><div class="who">Tharindu Bandara</div><div class="mail">tharindu@ceylontextiles.lk</div></td><td><span class="pill pill-positive">In</span></td><td class="num">08:35</td><td class="num">3h 31m</td><td class="note">location not verified</td></tr>
+                <tr><td><div class="who">Sanduni Wickrama</div><div class="mail">sanduni@ceylontextiles.lk</div></td><td><span class="pill pill-neutral">Left</span></td><td class="num">07:58</td><td class="num">4h 02m</td><td class="note">-</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h2 style="margin-top:32px">Annual leave taken</h2>
+          <div class="card" style="padding:16px">
+            <p class="note">Company-wide, this leave year</p>
+            <div class="big tnum" style="margin-top:4px">38 <span style="font-size:14px;color:var(--muted)">of 126 days</span></div>
+            <div class="track"><span style="width:30.2%"></span></div>
+            <p class="note" style="margin-top:8px">30% used, with 2 months of the year left</p>
+          </div>
+        </div>
+
+        <div>
+          <h2>Waiting for you</h2>
+          <div class="card queue">
+            <a href="#">Leave requests <span class="pill pill-accent">2</span></a>
+            <a href="#">Timesheets <span class="pill pill-accent">1</span></a>
+            <a href="#">Attendance corrections <span class="pill pill-accent">1</span></a>
+          </div>
+
+          <h2 style="margin-top:32px">Needs attention</h2>
+          <div class="card" style="padding:16px">
+            <div class="big tnum" style="color:var(--negative)">3</div>
+            <p class="note" style="margin-top:4px">2 missing clock-outs · 1 unverified location</p>
+            <button class="btn-quiet" style="margin-top:16px">Open attendance</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>
