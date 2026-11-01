@@ -9,16 +9,18 @@ import Clock from "./Clock";
 import History from "./History";
 import Leave from "./Leave";
 import Team from "./Team";
+import Pay from "./Pay";
 
 // Post-sign-in routing. Four states worth distinguishing, because "it doesn't work"
 // from a pilot customer is usually one of the middle two:
 //   loading | not claimed yet | admin (wrong app) | employee -> clock screen
-type Tab = "clock" | "history" | "leave" | "team";
+type Tab = "clock" | "history" | "leave" | "pay" | "team";
 
 const LABELS: Record<Tab, string> = {
   clock: "Clock",
-  history: "History",
+  history: "Hours",
   leave: "Leave",
+  pay: "Pay",
   team: "Team",
 };
 
@@ -88,13 +90,14 @@ export default function Home() {
         )}
         {tab === "history" && <History orgId={m.orgId} timezone={m.timezone} />}
         {tab === "leave" && <Leave orgId={m.orgId} timezone={m.timezone} />}
+        {tab === "pay" && <Pay orgId={m.orgId} />}
         {tab === "team" && <Team orgId={m.orgId} />}
       </View>
 
       {/* Four tabs now. Still a state switch rather than expo-router: there is
           no deep linking, no nested stack and no URL to honour on mobile. */}
       <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#eee" }}>
-        {(["clock", "history", "leave", "team"] as const).map((t) => (
+        {(["clock", "history", "leave", "pay", "team"] as const).map((t) => (
           <TouchableOpacity
             key={t}
             style={{ flex: 1, paddingVertical: 14, alignItems: "center" }}
@@ -104,7 +107,7 @@ export default function Home() {
           >
             <Text
               style={{
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: tab === t ? "700" : "400",
                 color: tab === t ? c.text : c.muted,
               }}

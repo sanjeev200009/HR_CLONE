@@ -35,9 +35,9 @@ function Attendance() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold">Attendance</h1>
+      <h1 className="text-[24px] font-semibold">Attendance</h1>
 
-      <div className="mt-6 grid gap-3 rounded-lg border border-neutral-200 bg-white p-4 sm:grid-cols-4">
+      <div className="mt-6 grid gap-3 rounded-lg border border-[var(--rule)] bg-white p-4 sm:grid-cols-4">
         <Field label="From">
           <input type="date" className={INPUT} value={from} onChange={(e) => setFrom(e.target.value)} />
         </Field>
@@ -76,17 +76,17 @@ function Attendance() {
       </div>
 
       {rows === undefined ? (
-        <p className="mt-6 text-neutral-500">Loading…</p>
+        <p className="mt-6 text-[var(--muted)]">Loading…</p>
       ) : (
         <>
-          <p className="mt-6 text-sm text-neutral-600">
+          <p className="mt-6 text-sm text-[var(--muted)]">
             {rows.length} record{rows.length === 1 ? "" : "s"} · {duration(totalMs)} total ·
             times shown in {timezone}
           </p>
 
-          <div className="mt-3 overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-            <table className="w-full text-sm">
-              <thead className="border-b border-neutral-200 text-neutral-500">
+          <div className="card mt-6 overflow-x-auto">
+            <table className="tbl">
+              <thead className="">
                 <tr>
                   <Th>Date</Th>
                   <Th>Employee</Th>
@@ -98,22 +98,22 @@ function Attendance() {
               </thead>
               <tbody>
                 {rows.map((r) => (
-                  <tr key={r._id} className="border-b border-neutral-100 last:border-0">
-                    <td className="px-4 py-3 tabular-nums">{r.workDate}</td>
-                    <td className="px-4 py-3">{r.fullName}</td>
-                    <td className="px-4 py-3 tabular-nums">
+                  <tr key={r._id} className="">
+                    <td className="num">{r.workDate}</td>
+                    <td className="">{r.fullName}</td>
+                    <td className="num">
                       {time(r.clockInAt, timezone)}
-                      {r.isLate && <span className="ml-1 text-xs text-amber-700">late</span>}
+                      {r.isLate && <span className="ml-1 text-xs text-[var(--warning)]">late</span>}
                     </td>
-                    <td className="px-4 py-3 tabular-nums">
+                    <td className="num">
                       {r.clockOutAt ? (
                         time(r.clockOutAt, timezone)
                       ) : (
-                        <span className="text-red-700">missing</span>
+                        <span className="text-[var(--negative)]">missing</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 tabular-nums">{duration(r.workedMs)}</td>
-                    <td className="px-4 py-3 text-xs">
+                    <td className="num">{duration(r.workedMs)}</td>
+                    <td className="text-xs">
                       <Verification
                         status={r.clockInStatus}
                         distanceM={r.clockInDistanceM}
@@ -131,7 +131,7 @@ function Attendance() {
                 ))}
                 {rows.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-4 py-6 text-neutral-500">
+                    <td colSpan={6} className="px-4 py-8 text-[var(--muted)]">
                       Nothing in this range.
                     </td>
                   </tr>
@@ -156,7 +156,7 @@ function Verification({
 }) {
   if (status === "verified") {
     return (
-      <div className="text-green-800">
+      <div className="text-[var(--positive)]">
         {label}: at workplace{distanceM !== null ? ` (${distanceM}m)` : ""}
       </div>
     );
@@ -167,7 +167,7 @@ function Verification({
     no_location: "no location",
     suspect_mocked: "location reported as simulated",
   };
-  return <div className="text-amber-700">{label}: {words[status] ?? status}</div>;
+  return <div className="text-[var(--warning)]">{label}: {words[status] ?? status}</div>;
 }
 
 /**

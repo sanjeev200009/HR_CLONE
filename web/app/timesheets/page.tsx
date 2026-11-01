@@ -37,8 +37,8 @@ function Timesheets() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold">Timesheets</h1>
-      <p className="mt-1 text-sm text-neutral-600">
+      <h1 className="text-[24px] font-semibold">Timesheets</h1>
+      <p className="mt-1 text-sm text-[var(--muted)]">
         Hours are derived from clock in/out, never typed. A timesheet records only the
         weekly sign-off.
       </p>
@@ -49,7 +49,7 @@ function Timesheets() {
             key={s}
             onClick={() => setStatus(s)}
             className={`rounded px-3 py-1.5 text-sm capitalize ${
-              status === s ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100"
+              status === s ? "bg-[var(--accent-soft)] text-[var(--accent-ink)]" : "text-[var(--muted)] hover:bg-[var(--raised)]"
             }`}
           >
             {s}
@@ -57,11 +57,11 @@ function Timesheets() {
         ))}
       </div>
 
-      {error && <p className="mt-3 text-sm text-red-700">{error}</p>}
+      {error && <p className="mt-3 text-sm text-[var(--negative)]">{error}</p>}
 
-      <div className="mt-4 overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 text-neutral-500">
+      <div className="card mt-6 overflow-x-auto">
+        <table className="tbl">
+          <thead className="">
             <tr>
               <Th>Employee</Th>
               <Th>Week</Th>
@@ -73,32 +73,32 @@ function Timesheets() {
           </thead>
           <tbody>
             {(rows ?? []).map((t) => (
-              <tr key={t._id} className="border-b border-neutral-100 last:border-0 align-top">
-                <td className="px-4 py-3">
+              <tr key={t._id} className="align-top">
+                <td className="">
                   <div className="font-medium">{t.fullName}</div>
-                  <div className="text-xs text-neutral-500">{t.email}</div>
+                  <div className="text-xs text-[var(--muted)]">{t.email}</div>
                 </td>
-                <td className="px-4 py-3 tabular-nums">{t.weekStart}</td>
-                <td className="px-4 py-3 tabular-nums">{duration(t.totalMs)}</td>
-                <td className="px-4 py-3 tabular-nums">
+                <td className="num">{t.weekStart}</td>
+                <td className="num">{duration(t.totalMs)}</td>
+                <td className="num">
                   {duration(t.liveTotalMs)}
                   {/* A correction approved after submission moves the number. The
                       approver must see that, not silently approve different hours. */}
                   {t.changedSinceSubmission && (
-                    <div className="text-xs text-amber-700">changed since submission</div>
+                    <div className="text-xs text-[var(--warning)]">changed since submission</div>
                   )}
                 </td>
-                <td className="px-4 py-3 text-neutral-700">
-                  {t.note ?? "—"}
+                <td className="text-[var(--text)]">
+                  {t.note ?? "-"}
                   {t.reviewNote && (
-                    <div className="mt-1 text-xs text-neutral-500">Review: {t.reviewNote}</div>
+                    <div className="mt-1 text-xs text-[var(--muted)]">Review: {t.reviewNote}</div>
                   )}
                 </td>
-                <td className="px-4 py-3">
+                <td className="">
                   {t.status === "submitted" ? (
                     <div className="flex flex-col items-end gap-2">
                       <input
-                        className="w-44 rounded border border-neutral-300 px-2 py-1 text-xs"
+                        className="w-44 rounded border border-[var(--control)] px-2 py-1 text-xs"
                         placeholder="reason (needed to reject)"
                         value={note[t._id] ?? ""}
                         onChange={(e) => setNote({ ...note, [t._id]: e.target.value })}
@@ -113,14 +113,14 @@ function Timesheets() {
                       </div>
                     </div>
                   ) : (
-                    <span className="text-xs text-neutral-500">{t.status}</span>
+                    <span className="text-xs text-[var(--muted)]">{t.status}</span>
                   )}
                 </td>
               </tr>
             ))}
             {rows?.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-neutral-500">
+                <td colSpan={6} className="px-4 py-8 text-[var(--muted)]">
                   {status === "submitted" ? "Nothing waiting for you." : `No ${status} timesheets.`}
                 </td>
               </tr>

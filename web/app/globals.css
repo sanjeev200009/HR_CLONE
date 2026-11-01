@@ -1,26 +1,190 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   Accent ladder — the dealt app style (docs/design-direction.json).
+
+   The move: one brand hue at full strength ONLY on small marks (the filled
+   button, the data series, the active nav icon); its 50-200 tints do all the
+   area work (the active nav row, the plan card, badges, progress tracks).
+
+   Off-style here, from the sheet: the full hue on large areas, a second accent
+   family, gradients, a left accent bar on the active nav row on top of the tint,
+   violet or indigo.
+
+   Colour budget 3-10%, nearly all of it pale tints. Colour goes on data, not
+   chrome: 17 of the 23 studied screens stay at 5% or less.
+   --------------------------------------------------------------------------- */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ground: #fbf7f8; /* one step toward the hue's palest tint — the sheet's face */
+  --surface: #ffffff;
+  --raised: #f3f4f6;
+  --border: #e5e7eb;
+  --rule: #f2f2f2;
+  --control: #d1d5db;
+  --text: #111827;
+  --muted: #5f6672;
+
+  --accent: #b8336a;
+  --accent-soft: #fdf2f7;
+  --accent-track: #f8dbe8;
+  --accent-ink: #6b1d3e;
+
+  --positive: #247b50;
+  --negative: #c4242a;
+  --warning: #92400e;
+
+  --chart-1: #b8336a;
+  --chart-2: #6b7280;
+  --chart-3: #d4618f;
+
+  --pill-positive-bg: #dcfce7; --pill-positive-ink: #14532d;
+  --pill-negative-bg: #ffedea; --pill-negative-ink: #831c1e;
+  --pill-warning-bg: #fffbeb;  --pill-warning-ink: #92400e;
+  --pill-neutral-bg: #f3f4f6;  --pill-neutral-ink: #374151;
+  --pill-accent-bg: #fdf2f7;   --pill-accent-ink: #6b1d3e;
+
+  --radius-card: 8px;
+  --radius-control: 6px;
+  --row-height: 45px;
+  --sidebar-width: 230px;
+  --gap: 24px;
+  --pad: 24px;
+  --control-height: 32px;
+
+  --fs-title: 32px;
+  --fs-section: 18px;
+  --fs-kpi: 24px;
+  --fs-body: 14px;
+  --fs-small: 12px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ground: var(--ground);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-line: var(--border);
+  --color-rule: var(--rule);
+  --color-ink: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-track: var(--accent-track);
+  --color-accent-ink: var(--accent-ink);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
+  --color-warning: var(--warning);
+  --font-sans: "DM Sans", Inter, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  font-family: "DM Sans", Inter, system-ui, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ground);
+  color: var(--text);
+  font-size: var(--fs-body);
+  -webkit-font-smoothing: antialiased;
 }
+
+/* Tabular figures on everything that is a number or updates, per the sheet.
+   A column of times that shifts width as the digits change is unreadable. */
+table,
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Flat surfaces: separation is a 1px line or one tone step. taste-skill-ignore */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+/* The one filled button carries the full hue. Everything else is outlined. */
+.btn {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--radius-control);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  background: var(--accent);
+  color: #fff;
+  border: 1px solid var(--accent);
+}
+.btn:disabled { opacity: 0.5; }
+
+.btn-quiet {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--radius-control);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--control);
+}
+.btn-quiet:hover { background: var(--raised); }
+.btn-quiet:disabled { opacity: 0.5; }
+
+.input {
+  height: 40px;
+  width: 100%;
+  padding: 0 12px;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: var(--fs-body);
+  color: var(--text);
+}
+.input:focus { outline: none; border-color: var(--text); }
+textarea.input { height: auto; padding: 10px 12px; }
+select.input { padding-right: 8px; }
+
+/* Pills: the tinted areas the style's move allows. */
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.pill-positive { background: var(--pill-positive-bg); color: var(--pill-positive-ink); }
+.pill-negative { background: var(--pill-negative-bg); color: var(--pill-negative-ink); }
+.pill-warning  { background: var(--pill-warning-bg);  color: var(--pill-warning-ink); }
+.pill-neutral  { background: var(--pill-neutral-bg);  color: var(--pill-neutral-ink); }
+.pill-accent   { background: var(--pill-accent-bg);   color: var(--pill-accent-ink); }
+
+/* Progress tracks — area work in the pale tint, the bar in the full hue.
+   Used for leave balances: the one place a ratio is the answer. */
+.track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent-track);
+  overflow: hidden;
+}
+.track > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+/* Tables are rules and alignment: no zebra, no header fill, numbers right. */
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl th {
+  text-align: left;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+.tbl td {
+  padding: 12px;
+  border-top: 1px solid var(--rule);
+  font-size: var(--fs-body);
+  vertical-align: top;
+}
+.tbl .num { text-align: right; font-variant-numeric: tabular-nums; }

@@ -47,15 +47,15 @@ function Workplaces() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold">Workplaces</h1>
-      <p className="mt-1 text-sm text-neutral-600">
+      <h1 className="text-[24px] font-semibold">Workplaces</h1>
+      <p className="mt-1 text-sm text-[var(--muted)]">
         A workplace is a point and a radius. Employees assigned to it are verified
         against it when they clock in.
       </p>
 
       <form
         onSubmit={submit}
-        className="mt-6 grid gap-3 rounded-lg border border-neutral-200 bg-white p-4 sm:grid-cols-3"
+        className="mt-6 grid gap-3 rounded-lg border border-[var(--rule)] bg-white p-4 sm:grid-cols-3"
       >
         <Field label="Name">
           <input
@@ -104,28 +104,28 @@ function Workplaces() {
         </Field>
 
         <div className="sm:col-span-3">
-          {/* No map in the MVP (docs/PLAN.md) — a paid map isn't needed to store a
+          {/* No map in the MVP (docs/PLAN.md), a paid map isn't needed to store a
               point. This is how a non-technical admin gets the numbers. */}
-          <p className="mb-2 text-xs text-neutral-500">
+          <p className="mb-2 text-xs text-[var(--muted)]">
             To find the coordinates: open Google Maps, right-click your office, and click
             the latitude/longitude pair at the top of the menu to copy it. Paste the first
             number into Latitude and the second into Longitude.
           </p>
-          <p className="mb-2 text-xs text-neutral-500">
+          <p className="mb-2 text-xs text-[var(--muted)]">
             Keep the radius realistic. Phone GPS is usually accurate to 10–20 metres
             outdoors and much worse inside a building, so anything under ~50m will reject
             people who really are at work.
           </p>
-          {error && <p className="mb-2 text-sm text-red-700">{error}</p>}
+          {error && <p className="mb-2 text-sm text-[var(--negative)]">{error}</p>}
           <button type="submit" disabled={busy} className={BUTTON}>
             {busy ? "Saving…" : "Add workplace"}
           </button>
         </div>
       </form>
 
-      <div className="mt-8 overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 text-neutral-500">
+      <div className="card mt-6 overflow-x-auto">
+        <table className="tbl">
+          <thead className="">
             <tr>
               <Th>Name</Th>
               <Th>Coordinates</Th>
@@ -136,14 +136,14 @@ function Workplaces() {
           </thead>
           <tbody>
             {(list ?? []).map((w) => (
-              <tr key={w._id} className="border-b border-neutral-100 last:border-0">
-                <td className="px-4 py-3">
+              <tr key={w._id} className="">
+                <td className="">
                   <div className="font-medium">{w.name}</div>
-                  <div className="text-xs text-neutral-500">{w.address ?? "—"}</div>
+                  <div className="text-xs text-[var(--muted)]">{w.address ?? "-"}</div>
                 </td>
-                <td className="px-4 py-3 tabular-nums">
+                <td className="num">
                   <a
-                    className="text-blue-700 hover:underline"
+                    className="text-[var(--accent-ink)] hover:underline"
                     href={`https://www.google.com/maps?q=${w.lat},${w.lng}`}
                     target="_blank"
                     rel="noreferrer"
@@ -151,17 +151,17 @@ function Workplaces() {
                     {w.lat.toFixed(5)}, {w.lng.toFixed(5)}
                   </a>
                 </td>
-                <td className="px-4 py-3 tabular-nums">{w.radiusM} m</td>
-                <td className="px-4 py-3">
+                <td className="num">{w.radiusM} m</td>
+                <td className="">
                   {w.isActive ? (
-                    <span className="text-green-800">active</span>
+                    <span className="text-[var(--positive)]">active</span>
                   ) : (
-                    <span className="text-neutral-500">inactive</span>
+                    <span className="text-[var(--muted)]">inactive</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-right">
+                <td className="text-right">
                   <button
-                    className="text-xs text-blue-700 hover:underline"
+                    className="text-xs text-[var(--accent-ink)] hover:underline"
                     onClick={() =>
                       update({ orgId, workplaceId: w._id, isActive: !w.isActive }).catch((e) =>
                         setError(clean(e)),
@@ -175,7 +175,7 @@ function Workplaces() {
             ))}
             {list?.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-neutral-500">
+                <td colSpan={5} className="px-4 py-8 text-[var(--muted)]">
                   No workplaces yet. Until one exists, nobody&apos;s attendance can be
                   location-verified.
                 </td>

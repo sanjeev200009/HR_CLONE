@@ -41,8 +41,8 @@ function Corrections() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold">Corrections</h1>
-      <p className="mt-1 text-sm text-neutral-600">
+      <h1 className="text-[24px] font-semibold">Corrections</h1>
+      <p className="mt-1 text-sm text-[var(--muted)]">
         An employee asks, you decide. Approving changes the stored time and writes the
         before and after into the audit log.
       </p>
@@ -53,7 +53,7 @@ function Corrections() {
             key={s}
             onClick={() => setStatus(s)}
             className={`rounded px-3 py-1.5 text-sm capitalize ${
-              status === s ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100"
+              status === s ? "bg-[var(--accent-soft)] text-[var(--accent-ink)]" : "text-[var(--muted)] hover:bg-[var(--raised)]"
             }`}
           >
             {s}
@@ -61,11 +61,11 @@ function Corrections() {
         ))}
       </div>
 
-      {error && <p className="mt-4 text-sm text-red-700">{error}</p>}
+      {error && <p className="mt-4 text-sm text-[var(--negative)]">{error}</p>}
 
-      <div className="mt-4 overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 text-neutral-500">
+      <div className="card mt-6 overflow-x-auto">
+        <table className="tbl">
+          <thead className="">
             <tr>
               <Th>Employee</Th>
               <Th>Day</Th>
@@ -79,18 +79,18 @@ function Corrections() {
             {(rows ?? []).map((r) => {
               const change = r.requestedChange as { clockInAt?: number; clockOutAt?: number };
               return (
-                <tr key={r._id} className="border-b border-neutral-100 last:border-0">
-                  <td className="px-4 py-3 font-medium">{r.fullName}</td>
-                  <td className="px-4 py-3 tabular-nums">{r.workDate ?? "—"}</td>
-                  <td className="px-4 py-3 tabular-nums">
-                    {r.currentClockInAt ? time(r.currentClockInAt, timezone) : "—"} –{" "}
+                <tr key={r._id} className="">
+                  <td className="font-medium">{r.fullName}</td>
+                  <td className="num">{r.workDate ?? "-"}</td>
+                  <td className="num">
+                    {r.currentClockInAt ? time(r.currentClockInAt, timezone) : "-"} –{" "}
                     {r.currentClockOutAt ? (
                       time(r.currentClockOutAt, timezone)
                     ) : (
-                      <span className="text-red-700">missing</span>
+                      <span className="text-[var(--negative)]">missing</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 tabular-nums">
+                  <td className="num">
                     {change.clockInAt !== undefined && (
                       <div>in → {time(change.clockInAt, timezone)}</div>
                     )}
@@ -98,8 +98,8 @@ function Corrections() {
                       <div>out → {time(change.clockOutAt, timezone)}</div>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-neutral-700">{r.reason}</td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="text-[var(--text)]">{r.reason}</td>
+                  <td className="text-right">
                     {r.status === "pending" ? (
                       <div className="flex justify-end gap-2">
                         <button
@@ -118,7 +118,7 @@ function Corrections() {
                         </button>
                       </div>
                     ) : (
-                      <span className="text-xs text-neutral-500">
+                      <span className="text-xs text-[var(--muted)]">
                         {r.status}
                         {r.reviewedAt ? ` · ${time(r.reviewedAt, timezone)}` : ""}
                       </span>
@@ -129,7 +129,7 @@ function Corrections() {
             })}
             {rows?.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-neutral-500">
+                <td colSpan={6} className="px-4 py-8 text-[var(--muted)]">
                   {status === "pending" ? "Nothing waiting for you." : `No ${status} corrections.`}
                 </td>
               </tr>

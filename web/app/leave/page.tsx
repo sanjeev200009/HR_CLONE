@@ -22,7 +22,7 @@ function Leave() {
   const [tab, setTab] = useState<Tab>("requests");
   return (
     <>
-      <h1 className="text-2xl font-semibold">Leave</h1>
+      <h1 className="text-[24px] font-semibold">Leave</h1>
       <div className="mt-4 flex gap-1 overflow-x-auto">
         {(
           [
@@ -36,7 +36,7 @@ function Leave() {
             key={k}
             onClick={() => setTab(k)}
             className={`whitespace-nowrap rounded px-3 py-1.5 text-sm ${
-              tab === k ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100"
+              tab === k ? "bg-[var(--accent-soft)] text-[var(--accent-ink)]" : "text-[var(--muted)] hover:bg-[var(--raised)]"
             }`}
           >
             {label}
@@ -79,45 +79,45 @@ function Requests() {
             key={s}
             onClick={() => setStatus(s)}
             className={`rounded px-2.5 py-1 text-xs capitalize ${
-              status === s ? "bg-neutral-200 font-medium" : "text-neutral-600 hover:bg-neutral-100"
+              status === s ? "bg-[var(--accent-soft)] text-[var(--accent-ink)] font-medium" : "text-[var(--muted)] hover:bg-[var(--raised)]"
             }`}
           >
             {s}
           </button>
         ))}
       </div>
-      {error && <p className="mb-3 text-sm text-red-700">{error}</p>}
+      {error && <p className="mb-3 text-sm text-[var(--negative)]">{error}</p>}
 
-      <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 text-neutral-500">
+      <div className="card overflow-x-auto">
+        <table className="tbl">
+          <thead className="">
             <tr><Th>Employee</Th><Th>Type</Th><Th>Dates</Th><Th>Days</Th><Th>Reason</Th><Th> </Th></tr>
           </thead>
           <tbody>
             {(rows ?? []).map((r) => (
-              <tr key={r._id} className="border-b border-neutral-100 last:border-0 align-top">
-                <td className="px-4 py-3">
+              <tr key={r._id} className="align-top">
+                <td className="">
                   <div className="font-medium">{r.fullName}</div>
-                  <div className="text-xs text-neutral-500">{r.email}</div>
+                  <div className="text-xs text-[var(--muted)]">{r.email}</div>
                 </td>
-                <td className="px-4 py-3">{r.typeName}</td>
-                <td className="px-4 py-3 tabular-nums">
+                <td className="">{r.typeName}</td>
+                <td className="num">
                   {r.startDate}
                   {r.endDate !== r.startDate ? ` → ${r.endDate}` : ""}
-                  {r.halfDay && <div className="text-xs text-neutral-500">{r.halfDay} half day</div>}
+                  {r.halfDay && <div className="text-xs text-[var(--muted)]">{r.halfDay} half day</div>}
                 </td>
-                <td className="px-4 py-3 tabular-nums">{r.days}</td>
-                <td className="px-4 py-3 text-neutral-700">
+                <td className="num">{r.days}</td>
+                <td className="text-[var(--text)]">
                   {r.reason}
                   {r.reviewNote && (
-                    <div className="mt-1 text-xs text-neutral-500">Note: {r.reviewNote}</div>
+                    <div className="mt-1 text-xs text-[var(--muted)]">Note: {r.reviewNote}</div>
                   )}
                 </td>
-                <td className="px-4 py-3">
+                <td className="">
                   {r.status === "pending" ? (
                     <div className="flex flex-col items-end gap-2">
                       <input
-                        className="w-40 rounded border border-neutral-300 px-2 py-1 text-xs"
+                        className="w-40 rounded border border-[var(--control)] px-2 py-1 text-xs"
                         placeholder="note (optional)"
                         value={note[r._id] ?? ""}
                         onChange={(e) => setNote({ ...note, [r._id]: e.target.value })}
@@ -128,13 +128,13 @@ function Requests() {
                       </div>
                     </div>
                   ) : (
-                    <span className="text-xs text-neutral-500">{r.status}</span>
+                    <span className="text-xs text-[var(--muted)]">{r.status}</span>
                   )}
                 </td>
               </tr>
             ))}
             {rows?.length === 0 && (
-              <tr><td colSpan={6} className="px-4 py-6 text-neutral-500">
+              <tr><td colSpan={6} className="px-4 py-8 text-[var(--muted)]">
                 {status === "pending" ? "Nothing waiting for you." : `No ${status} requests.`}
               </td></tr>
             )}
@@ -157,23 +157,23 @@ function Calendar() {
         <Field label="From"><input type="date" className={INPUT} value={from} onChange={(e) => setFrom(e.target.value)} /></Field>
         <Field label="To"><input type="date" className={INPUT} value={to} onChange={(e) => setTo(e.target.value)} /></Field>
       </div>
-      <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 text-neutral-500">
+      <div className="card overflow-x-auto">
+        <table className="tbl">
+          <thead className="">
             <tr><Th>Employee</Th><Th>Type</Th><Th>From</Th><Th>To</Th><Th>Days</Th></tr>
           </thead>
           <tbody>
             {(rows ?? []).map((r) => (
-              <tr key={r._id} className="border-b border-neutral-100 last:border-0">
-                <td className="px-4 py-3 font-medium">{r.fullName}</td>
-                <td className="px-4 py-3">{r.typeName}</td>
-                <td className="px-4 py-3 tabular-nums">{r.startDate}</td>
-                <td className="px-4 py-3 tabular-nums">{r.endDate}</td>
-                <td className="px-4 py-3 tabular-nums">{r.days}{r.halfDay ? ` (${r.halfDay})` : ""}</td>
+              <tr key={r._id} className="">
+                <td className="font-medium">{r.fullName}</td>
+                <td className="">{r.typeName}</td>
+                <td className="num">{r.startDate}</td>
+                <td className="num">{r.endDate}</td>
+                <td className="num">{r.days}{r.halfDay ? ` (${r.halfDay})` : ""}</td>
               </tr>
             ))}
             {rows?.length === 0 && (
-              <tr><td colSpan={5} className="px-4 py-6 text-neutral-500">Nobody is off in that window.</td></tr>
+              <tr><td colSpan={5} className="px-4 py-8 text-[var(--muted)]">Nobody is off in that window.</td></tr>
             )}
           </tbody>
         </table>
@@ -195,23 +195,23 @@ function Types() {
 
   return (
     <>
-      <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 text-neutral-500">
+      <div className="card overflow-x-auto">
+        <table className="tbl">
+          <thead className="">
             <tr><Th>Name</Th><Th>Days/year</Th><Th>Accrual</Th><Th>Carry forward</Th><Th>Paid</Th><Th>Half days</Th><Th>Active</Th></tr>
           </thead>
           <tbody>
             {(types ?? []).map((t) => (
-              <tr key={t._id} className="border-b border-neutral-100 last:border-0">
-                <td className="px-4 py-3 font-medium">{t.name}</td>
-                <td className="px-4 py-3 tabular-nums">{t.daysPerYear}</td>
-                <td className="px-4 py-3">{t.accrualMode}</td>
-                <td className="px-4 py-3 tabular-nums">{t.carryForwardMax || "none"}</td>
-                <td className="px-4 py-3">{t.isPaid ? "yes" : "no"}</td>
-                <td className="px-4 py-3">{t.allowHalfDay ? "yes" : "no"}</td>
-                <td className="px-4 py-3">
+              <tr key={t._id} className="">
+                <td className="font-medium">{t.name}</td>
+                <td className="num">{t.daysPerYear}</td>
+                <td className="">{t.accrualMode}</td>
+                <td className="num">{t.carryForwardMax || "none"}</td>
+                <td className="">{t.isPaid ? "yes" : "no"}</td>
+                <td className="">{t.allowHalfDay ? "yes" : "no"}</td>
+                <td className="">
                   <button
-                    className="text-xs text-blue-700 hover:underline"
+                    className="text-xs text-[var(--accent-ink)] hover:underline"
                     onClick={() =>
                       upsert({
                         orgId,
@@ -233,8 +233,8 @@ function Types() {
               </tr>
             ))}
             {types?.length === 0 && (
-              <tr><td colSpan={7} className="px-4 py-6 text-neutral-500">
-                No leave types yet — nobody can request leave until you add one.
+              <tr><td colSpan={7} className="px-4 py-8 text-[var(--muted)]">
+                No leave types yet, nobody can request leave until you add one.
               </td></tr>
             )}
           </tbody>
@@ -242,7 +242,7 @@ function Types() {
       </div>
 
       <form
-        className="mt-4 grid gap-3 rounded-lg border border-neutral-200 bg-white p-4 sm:grid-cols-4"
+        className="mt-4 grid gap-3 rounded-lg border border-[var(--rule)] bg-white p-4 sm:grid-cols-4"
         onSubmit={async (e) => {
           e.preventDefault();
           setError(null);
@@ -274,11 +274,11 @@ function Types() {
           <Check label="Allow half days" checked={f.allowHalfDay} onChange={(v) => setF({ ...f, allowHalfDay: v })} />
         </div>
         <div className="sm:col-span-4">
-          <p className="mb-2 text-xs text-neutral-500">
+          <p className="mb-2 text-xs text-[var(--muted)]">
             Monthly accrual stops a November joiner receiving a full year on their
             first day. Carry-forward of 0 means use it or lose it.
           </p>
-          {error && <p className="mb-2 text-sm text-red-700">{error}</p>}
+          {error && <p className="mb-2 text-sm text-[var(--negative)]">{error}</p>}
           <button className={BUTTON}>Add leave type</button>
         </div>
       </form>
@@ -297,20 +297,20 @@ function Holidays() {
 
   return (
     <>
-      <p className="mb-3 text-sm text-neutral-600">
+      <p className="mb-3 text-sm text-[var(--muted)]">
         A public holiday inside a leave request is not deducted from the employee&apos;s
         balance. Sri Lanka has Poya days every month, so this list matters.
       </p>
-      <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 text-neutral-500"><tr><Th>Date</Th><Th>Name</Th><Th> </Th></tr></thead>
+      <div className="card overflow-x-auto">
+        <table className="tbl">
+          <thead className=""><tr><Th>Date</Th><Th>Name</Th><Th> </Th></tr></thead>
           <tbody>
             {(rows ?? []).map((h) => (
-              <tr key={h._id} className="border-b border-neutral-100 last:border-0">
-                <td className="px-4 py-3 tabular-nums">{h.date}</td>
-                <td className="px-4 py-3">{h.name}</td>
-                <td className="px-4 py-3 text-right">
-                  <button className="text-xs text-blue-700 hover:underline"
+              <tr key={h._id} className="">
+                <td className="num">{h.date}</td>
+                <td className="">{h.name}</td>
+                <td className="text-right">
+                  <button className="text-xs text-[var(--accent-ink)] hover:underline"
                     onClick={() => remove({ orgId, holidayId: h._id }).catch((e) => setError(clean(e)))}>
                     Remove
                   </button>
@@ -318,13 +318,13 @@ function Holidays() {
               </tr>
             ))}
             {rows?.length === 0 && (
-              <tr><td colSpan={3} className="px-4 py-6 text-neutral-500">No holidays set for {year}.</td></tr>
+              <tr><td colSpan={3} className="px-4 py-8 text-[var(--muted)]">No holidays set for {year}.</td></tr>
             )}
           </tbody>
         </table>
       </div>
       <form
-        className="mt-4 grid gap-3 rounded-lg border border-neutral-200 bg-white p-4 sm:grid-cols-3"
+        className="mt-4 grid gap-3 rounded-lg border border-[var(--rule)] bg-white p-4 sm:grid-cols-3"
         onSubmit={async (e) => {
           e.preventDefault();
           setError(null);
@@ -339,7 +339,7 @@ function Holidays() {
         <div className="flex items-end">
           <button className={BUTTON}>Add holiday</button>
         </div>
-        {error && <p className="text-sm text-red-700 sm:col-span-3">{error}</p>}
+        {error && <p className="text-sm text-[var(--negative)] sm:col-span-3">{error}</p>}
       </form>
     </>
   );

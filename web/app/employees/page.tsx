@@ -69,11 +69,11 @@ function Employees() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold">Employees</h1>
+      <h1 className="text-[24px] font-semibold">Employees</h1>
 
       <form
         onSubmit={submit}
-        className="mt-6 grid gap-3 rounded-lg border border-neutral-200 bg-white p-4 sm:grid-cols-3"
+        className="mt-6 grid gap-3 rounded-lg border border-[var(--rule)] bg-white p-4 sm:grid-cols-3"
       >
         <Field label="Work email">
           <input
@@ -116,7 +116,7 @@ function Employees() {
             value={form.workplaceId}
             onChange={(e) => setForm({ ...form, workplaceId: e.target.value })}
           >
-            <option value="">— none —</option>
+            <option value="">- none -</option>
             {(workplaces ?? []).map((w) => (
               <option key={w._id} value={w._id}>
                 {w.name}
@@ -130,7 +130,7 @@ function Employees() {
             value={form.departmentId}
             onChange={(e) => setForm({ ...form, departmentId: e.target.value })}
           >
-            <option value="">— none —</option>
+            <option value="">- none -</option>
             {(departments ?? []).map((d) => (
               <option key={d._id} value={d._id}>
                 {d.name}
@@ -143,60 +143,60 @@ function Employees() {
           {/* Without a workplace there is nothing to geofence against, so say so
               here rather than letting the employee discover it at the gate. */}
           {!form.workplaceId && (
-            <p className="mb-2 text-xs text-amber-700">
+            <p className="mb-2 text-xs text-[var(--warning)]">
               With no workplace assigned, this person&apos;s attendance cannot be verified
               against a location.
             </p>
           )}
-          {error && <p className="mb-2 text-sm text-red-700">{error}</p>}
+          {error && <p className="mb-2 text-sm text-[var(--negative)]">{error}</p>}
           <button type="submit" disabled={busy} className={BUTTON}>
             {busy ? "Adding…" : "Add employee"}
           </button>
-          <span className="ml-3 text-xs text-neutral-500">
+          <span className="ml-3 text-xs text-[var(--muted)]">
             They sign in on the mobile app with this exact email.
           </span>
         </div>
       </form>
 
-      <div className="mt-8 overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 text-left text-neutral-500">
+      <div className="card mt-6 overflow-x-auto">
+        <table className="tbl">
+          <thead className="">
             <tr>
-              <th className="px-4 py-2.5 font-medium">Name</th>
-              <th className="px-4 py-2.5 font-medium">Role</th>
-              <th className="px-4 py-2.5 font-medium">Workplace</th>
-              <th className="px-4 py-2.5 font-medium">Department</th>
-              <th className="px-4 py-2.5 font-medium">Status</th>
-              <th className="px-4 py-2.5 font-medium"></th>
+              <th className="">Name</th>
+              <th className="">Role</th>
+              <th className="">Workplace</th>
+              <th className="">Department</th>
+              <th className="">Status</th>
+              <th className=""></th>
             </tr>
           </thead>
           <tbody>
             {(list ?? []).map((m) => (
-              <tr key={m._id} className="border-b border-neutral-100 last:border-0">
-                <td className="px-4 py-3">
+              <tr key={m._id} className="">
+                <td className="">
                   <div className="font-medium">{m.fullName}</div>
-                  <div className="text-xs text-neutral-500">{m.email}</div>
+                  <div className="text-xs text-[var(--muted)]">{m.email}</div>
                 </td>
-                <td className="px-4 py-3">{m.role}</td>
-                <td className="px-4 py-3">
-                  {m.workplace ?? <span className="text-amber-700">none</span>}
+                <td className="">{m.role}</td>
+                <td className="">
+                  {m.workplace ?? <span className="text-[var(--warning)]">none</span>}
                 </td>
-                <td className="px-4 py-3">{m.department ?? "—"}</td>
-                <td className="px-4 py-3">
+                <td className="">{m.department ?? "-"}</td>
+                <td className="">
                   {!m.isActive ? (
-                    <span className="text-neutral-500">inactive</span>
+                    <span className="text-[var(--muted)]">inactive</span>
                   ) : m.hasSignedIn ? (
-                    <span className="text-green-800">active</span>
+                    <span className="text-[var(--positive)]">active</span>
                   ) : (
                     // The single most common support question: "I added them,
                     // why aren't they on the board?"
-                    <span className="text-amber-700">never signed in</span>
+                    <span className="text-[var(--warning)]">never signed in</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-right">
+                <td className="text-right">
                   <button
                     onClick={() => toggleActive(m._id, m.isActive)}
-                    className="text-xs text-blue-700 hover:underline"
+                    className="text-xs text-[var(--accent-ink)] hover:underline"
                   >
                     {m.isActive ? "Deactivate" : "Reactivate"}
                   </button>
@@ -205,7 +205,7 @@ function Employees() {
             ))}
             {list?.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-neutral-500">
+                <td colSpan={6} className="px-4 py-8 text-[var(--muted)]">
                   Nobody yet.
                 </td>
               </tr>

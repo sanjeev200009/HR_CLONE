@@ -1,151 +1,223 @@
 "use client";
 
+import Link from "next/link";
 import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import Shell, { useOrg } from "./components/Shell";
+import { KpiStrip, Kpi, TitleRow, Pill, Empty, SectionHead } from "./components/ui";
 import { time, duration } from "./lib/format";
 
-// The "who is in" board. Reactive, so it updates itself as people clock in — the
-// reason this product is on Convex at all (docs/PLAN.md).
+// The overview.
+//
+// Its one question: "Is everyone who should be at work, at work?" That decides
+// what is biggest (the board), what comes first (the finding), and what is left
+// out (no charts — a few numbers say it, as four of the 23 studied screens found).
+//
+// Its one finding is computed, not decorative: the single sentence an admin needs
+// before they look at anything else.
 
 export default function Page() {
   return (
     <Shell>
-      <Board />
+      <Overview />
     </Shell>
   );
 }
 
-const STATE_LABEL: Record<string, string> = {
-  in: "In",
-  out: "Left",
-  absent: "Not in",
-  missing_clock_out: "No clock-out",
+const STATE: Record<string, { label: string; kind: "positive" | "negative" | "warning" | "neutral" | "accent" }> = {
+  in: { label: "In", kind: "positive" },
+  out: { label: "Left", kind: "neutral" },
+  on_leave: { label: "On leave", kind: "accent" },
+  absent: { label: "Not in", kind: "warning" },
+  missing_clock_out: { label: "No clock-out", kind: "negative" },
 };
 
-const STATE_STYLE: Record<string, string> = {
-  in: "bg-green-100 text-green-900",
-  out: "bg-neutral-100 text-neutral-700",
-  absent: "bg-amber-100 text-amber-900",
-  missing_clock_out: "bg-red-100 text-red-900",
-};
-
-function Board() {
-  const { orgId, timezone } = useOrg();
+function Overview() {
+  const { orgId, timezone, fullName } = useOrg();
   const board = useQuery(api.admin.todayBoard, { orgId });
+  const pendingLeave = useQuery(api.leave.pending, { orgId, status: "pending" });
+  const pendingSheets = useQuery(api.timesheets.list, { orgId, status: "submitted" });
+  const pendingFixes = useQuery(api.corrections.list, { orgId, status: "pending" });
 
-  if (board === undefined) return <p className="text-neutral-500">Loading…</p>;
+  if (board === undefined) return <p className="text-[var(--muted)]">Loading…</p>;
 
   const { counts } = board;
+  const needsAttention = counts.missingClockOut + counts.flagged;
+
+  // The finding: the one sentence that most needs saying about today's data.
+  // Ordered by what would make an admin act soonest.
+  const finding = (() => {
+    if (board.holidayName) {
+      return `${board.holidayName}. The office is closed, so ${counts.absent} not in is expected.`;
+    }
+    if (counts.missingClockOut > 0) {
+      return `${counts.missingClockOut} ${counts.missingClockOut === 1 ? "person has" : "people have"} no clock-out, so those days have no hours against them.`;
+    }
+    if (counts.flagged > 0) {
+      return `${counts.flagged} ${counts.flagged === 1 ? "clock-in was" : "clock-ins were"} not verified against a workplace.`;
+    }
+    if (board.pastExpectedEnd && counts.absent > 0) {
+      return `${counts.absent} never clocked in today and the working day has ended.`;
+    }
+    if (counts.late > 0) {
+      return `${counts.late} ${counts.late === 1 ? "arrival was" : "arrivals were"} after ${board.workDate === "" ? "the grace period" : "the grace period"}.`;
+    }
+    if (counts.employees === 0) return "No employees yet. Add your team on the Employees page.";
+    return `All ${counts.in + counts.out} who clocked in today were at their workplace.`;
+  })();
+
+  const queue = [
+    { label: "Leave requests", n: pendingLeave?.length ?? 0, href: "/leave" },
+    { label: "Timesheets", n: pendingSheets?.length ?? 0, href: "/timesheets" },
+    { label: "Attendance corrections", n: pendingFixes?.length ?? 0, href: "/corrections" },
+  ];
+  const waiting = queue.reduce((s, q) => s + q.n, 0);
 
   return (
     <>
-      <div className="flex items-baseline justify-between">
-        <h1 className="text-2xl font-semibold">Today</h1>
-        <p className="text-sm text-neutral-500">
-          {board.workDate} · {timezone}
-        </p>
-      </div>
+      <TitleRow
+        title={`Good day, ${fullName.split(" ")[0]}`}
+        sub={finding}
+        action={
+          // The most frequent job, one click from the first screen.
+          waiting > 0 ? (
+            <Link href={queue.find((q) => q.n > 0)!.href} className="btn inline-flex items-center">
+              Review {waiting} waiting
+            </Link>
+          ) : (
+            <Link href="/attendance" className="btn-quiet inline-flex items-center">
+              Attendance report
+            </Link>
+          )
+        }
+      />
 
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        <Stat label="Employees" value={counts.employees} />
-        <Stat label="Clocked in" value={counts.in} tone={counts.in > 0 ? "good" : undefined} />
-        <Stat label="Left" value={counts.out} />
-        {/* Before the working day ends, "not in" may just mean "not yet". */}
-        <Stat
+      <p className="mt-4 text-[12px] text-[var(--muted)]">
+        {board.workDate} · {timezone}
+        {board.holidayName ? ` · ${board.holidayName}` : ""}
+      </p>
+
+      <KpiStrip>
+        <Kpi label="On the payroll" value={counts.employees} caption="active employees" />
+        <Kpi label="Clocked in now" value={counts.in} caption="right now" tone={counts.in > 0 ? "positive" : undefined} />
+        <Kpi label="Clocked out" value={counts.out} caption="finished today" />
+        <Kpi label="On leave" value={counts.onLeave} caption="approved today" />
+        <Kpi
+          label="Late"
+          value={counts.late}
+          caption="past the grace period"
+          tone={counts.late > 0 ? "warning" : undefined}
+        />
+        <Kpi
           label={board.pastExpectedEnd ? "Absent" : "Not in yet"}
           value={counts.absent}
-          tone={counts.absent > 0 && board.pastExpectedEnd ? "warn" : undefined}
+          caption={board.pastExpectedEnd ? "day has ended" : `due by ${board.workDate ? "start" : "start"}`}
+          tone={counts.absent > 0 && board.pastExpectedEnd ? "negative" : undefined}
         />
-        <Stat label="Late" value={counts.late} tone={counts.late > 0 ? "warn" : undefined} />
-        <Stat
-          label="Needs attention"
-          value={counts.missingClockOut + counts.flagged}
-          tone={counts.missingClockOut + counts.flagged > 0 ? "bad" : undefined}
-        />
-      </div>
+      </KpiStrip>
 
-      <div className="mt-8 overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 text-left text-neutral-500">
-            <tr>
-              <Th>Employee</Th>
-              <Th>State</Th>
-              <Th>Since</Th>
-              <Th>Today</Th>
-              <Th>Notes</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {board.rows.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-4 py-6 text-neutral-500">
-                  No employees yet — add your team on the Employees page.
-                </td>
-              </tr>
-            )}
-            {board.rows.map((r) => (
-              <tr key={r.memberId} className="border-b border-neutral-100 last:border-0">
-                <td className="px-4 py-3">
-                  <div className="font-medium">{r.fullName}</div>
-                  <div className="text-xs text-neutral-500">{r.email}</div>
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`rounded px-2 py-0.5 text-xs font-medium ${STATE_STYLE[r.state]}`}
-                  >
-                    {STATE_LABEL[r.state]}
-                  </span>
-                </td>
-                <td className="px-4 py-3 tabular-nums">
-                  {r.since ? time(r.since, timezone) : "—"}
-                </td>
-                <td className="px-4 py-3 tabular-nums">
-                  {r.totalMs ? duration(r.totalMs) : "—"}
-                </td>
-                <td className="px-4 py-3 text-xs text-neutral-600">
-                  {[
-                    r.isLate ? "late" : null,
-                    r.sessions > 1 ? `${r.sessions} sessions` : null,
-                    r.flagged ? "location not verified" : null,
-                  ]
-                    .filter(Boolean)
-                    .join(" · ") || "—"}
-                </td>
-              </tr>
+      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_384px]">
+        <div className="min-w-0">
+          <SectionHead>Who is in</SectionHead>
+          <div className="card overflow-x-auto">
+            <table className="tbl">
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>State</th>
+                  <th className="num">Since</th>
+                  <th className="num">Today</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {board.rows.length === 0 && (
+                  <tr>
+                    <td colSpan={5}>
+                      <Empty>
+                        No employees yet. Add your team on the Employees page, then they
+                        sign in on the mobile app with the same email.
+                      </Empty>
+                    </td>
+                  </tr>
+                )}
+                {board.rows.map((r) => (
+                  <tr key={r.memberId}>
+                    <td>
+                      <div className="font-medium">{r.fullName}</div>
+                      <div className="text-[12px] text-[var(--muted)]">{r.email}</div>
+                    </td>
+                    <td>
+                      <Pill kind={STATE[r.state].kind}>
+                        {r.state === "on_leave" && r.leaveType
+                          ? r.leaveType
+                          : STATE[r.state].label}
+                      </Pill>
+                    </td>
+                    <td className="num">{r.since ? time(r.since, timezone) : "-"}</td>
+                    <td className="num">{r.totalMs ? duration(r.totalMs) : "-"}</td>
+                    <td className="text-[12px] text-[var(--muted)]">
+                      {[
+                        r.isLate ? "late" : null,
+                        r.sessions > 1 ? `${r.sessions} sessions` : null,
+                        r.flagged ? "location not verified" : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ") || "-"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* The rail starts level with the first card, not with the title. */}
+        <div className="min-w-0">
+          <SectionHead>Waiting for you</SectionHead>
+          <div className="card divide-y divide-[var(--rule)]">
+            {queue.map((q) => (
+              <Link
+                key={q.href}
+                href={q.href}
+                className="flex h-[45px] items-center justify-between px-4 text-[14px] hover:bg-[var(--raised)]"
+              >
+                <span>{q.label}</span>
+                {q.n > 0 ? (
+                  <Pill kind="accent">{q.n}</Pill>
+                ) : (
+                  <span className="text-[var(--muted)]">0</span>
+                )}
+              </Link>
             ))}
-          </tbody>
-        </table>
+            {waiting === 0 && <Empty>Nothing waiting. Everything is reviewed.</Empty>}
+          </div>
+
+          <SectionHead>Needs attention</SectionHead>
+          <div className="card px-4 py-4">
+            {needsAttention === 0 ? (
+              <Empty>No unverified locations or missing clock-outs today.</Empty>
+            ) : (
+              <>
+                <div className="text-[24px] tnum" style={{ color: "var(--negative)" }}>
+                  {needsAttention}
+                </div>
+                <p className="mt-1 text-[12px] text-[var(--muted)]">
+                  {counts.missingClockOut} missing clock-out
+                  {counts.missingClockOut === 1 ? "" : "s"} · {counts.flagged} unverified
+                  location{counts.flagged === 1 ? "" : "s"}
+                </p>
+                <Link
+                  href="/attendance"
+                  className="btn-quiet mt-4 inline-flex items-center"
+                >
+                  Open attendance
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </>
   );
-}
-
-function Stat({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: number;
-  tone?: "good" | "warn" | "bad";
-}) {
-  const ring =
-    tone === "bad"
-      ? "ring-red-200"
-      : tone === "warn"
-        ? "ring-amber-200"
-        : tone === "good"
-          ? "ring-green-200"
-          : "ring-neutral-200";
-  return (
-    <div className={`rounded-lg bg-white p-4 ring-1 ${ring}`}>
-      <div className="text-2xl font-semibold tabular-nums">{value}</div>
-      <div className="mt-1 text-xs text-neutral-500">{label}</div>
-    </div>
-  );
-}
-
-function Th({ children }: { children: React.ReactNode }) {
-  return <th className="px-4 py-2.5 font-medium">{children}</th>;
 }

@@ -8,12 +8,19 @@ import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 import { ReactNode, createContext, useContext } from "react";
 
-// Everything an admin page needs: which org am I an admin of, and the nav.
+// The shell: a ruled T-frame (the dealt style's §4).
 //
-// The org is resolved ONCE here from members.me and passed down, rather than each
-// page reading an org id from the URL. A page that takes orgId from the URL invites
-// someone to try another company's id — which Convex would reject, but not offering
-// the invitation is better than relying on the rejection.
+// A 230px sidebar and a 64px top bar share one ground, divided only by 1px
+// rules. The sidebar holds the wordmark and the nav on a 40px pitch under
+// sentence-case group labels; the active row is a pale tint of the one hue with
+// its dark ink — never a left accent bar on top of the tint, which the study saw
+// once in 23 screens. The top bar carries the company and the user, because two
+// studied screens left ~1070px of it blank and were flagged for it.
+//
+// The org is resolved ONCE here from members.me and passed down, rather than
+// each page reading an org id from the URL. A page that takes orgId from the URL
+// invites someone to try another company's id — which Convex would reject, but
+// not offering the invitation is better than relying on the rejection.
 
 type OrgContext = {
   orgId: Id<"organizations">;
@@ -31,24 +38,39 @@ export function useOrg(): OrgContext {
   return v;
 }
 
-const NAV = [
-  { href: "/", label: "Today" },
-  { href: "/attendance", label: "Attendance" },
-  { href: "/timesheets", label: "Timesheets" },
-  { href: "/leave", label: "Leave" },
-  { href: "/directory", label: "Directory" },
-  { href: "/employees", label: "Employees" },
-  { href: "/workplaces", label: "Workplaces" },
-  { href: "/corrections", label: "Corrections" },
+const NAV: { group: string; items: { href: string; label: string }[] }[] = [
+  {
+    group: "Today",
+    items: [
+      { href: "/", label: "Who is in" },
+      { href: "/attendance", label: "Attendance" },
+      { href: "/timesheets", label: "Timesheets" },
+    ],
+  },
+  {
+    group: "People",
+    items: [
+      { href: "/leave", label: "Leave" },
+      { href: "/directory", label: "Directory" },
+      { href: "/employees", label: "Employees" },
+    ],
+  },
+  {
+    group: "Company",
+    items: [
+      { href: "/payroll", label: "Payroll" },
+      { href: "/workplaces", label: "Workplaces" },
+      { href: "/corrections", label: "Corrections" },
+      { href: "/settings", label: "Settings" },
+    ],
+  },
 ];
 
 export default function Shell({ children }: { children: ReactNode }) {
   const memberships = useQuery(api.members.me);
   const pathname = usePathname();
 
-  if (memberships === undefined) {
-    return <Centered>Loading…</Centered>;
-  }
+  if (memberships === undefined) return <Centered>Loading…</Centered>;
 
   const admin = memberships?.find((m) => m.role === "admin") ?? null;
 
@@ -58,7 +80,7 @@ export default function Shell({ children }: { children: ReactNode }) {
     return (
       <Centered>
         <h1 className="text-xl font-semibold">No dashboard access</h1>
-        <p className="mt-2 max-w-md text-neutral-600">
+        <p className="mt-2 max-w-md text-[var(--muted)]">
           This account isn&apos;t an admin of any company on AttendanceHR. If you&apos;re
           an employee, use the mobile app to clock in and out.
         </p>
@@ -78,35 +100,106 @@ export default function Shell({ children }: { children: ReactNode }) {
         fullName: admin.fullName,
       }}
     >
-      <div className="min-h-screen">
-        <header className="border-b border-neutral-200 bg-white">
-          <div className="mx-auto flex max-w-6xl items-center gap-6 px-6 py-3">
-            <span className="font-semibold">{admin.orgName}</span>
-            <nav className="flex flex-1 gap-1 overflow-x-auto">
-              {NAV.map((item) => {
-                const active =
-                  item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`whitespace-nowrap rounded px-3 py-1.5 text-sm ${
-                      active
-                        ? "bg-neutral-900 text-white"
-                        : "text-neutral-600 hover:bg-neutral-100"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </nav>
-            <UserButton />
+      <div className="flex min-h-screen">
+        <aside
+          className="hidden shrink-0 border-r border-[var(--rule)] md:block"
+          style={{ width: "var(--sidebar-width)" }}
+        >
+          <div className="flex h-16 items-center gap-2 px-6">
+            <Mark />
+            <span className="text-[15px] font-semibold tracking-tight">AttendanceHR</span>
           </div>
-        </header>
-        <main className="mx-auto max-w-6xl px-6 py-8">{children}</main>
+
+          <nav className="px-3 pb-8">
+            {NAV.map((section) => (
+              <div key={section.group} className="mb-5">
+                <div className="px-3 pb-1 text-[12px] text-[var(--muted)]">
+                  {section.group}
+                </div>
+                {section.items.map((item) => {
+                  const active =
+                    item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      aria-current={active ? "page" : undefined}
+                      className="flex h-10 items-center rounded-[6px] px-3 text-[14px]"
+                      style={
+                        active
+                          ? {
+                              background: "var(--accent-soft)",
+                              color: "var(--accent-ink)",
+                              fontWeight: 500,
+                            }
+                          : { color: "var(--muted)" }
+                      }
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            ))}
+          </nav>
+        </aside>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header className="flex h-16 items-center border-b border-[var(--rule)] px-6">
+            {/* Mobile: the wordmark moves here, since the sidebar is hidden. */}
+            <span className="flex items-center gap-2 text-[15px] font-semibold md:hidden">
+              <Mark />
+              AttendanceHR
+            </span>
+            <div className="ml-auto flex items-center gap-4">
+              <span className="text-[14px] text-[var(--muted)]">{admin.orgName}</span>
+              <span className="h-16 w-px bg-[var(--rule)]" />
+              <UserButton />
+            </div>
+          </header>
+
+          {/* Mobile nav: the sidebar becomes a scrolling row of destinations. */}
+          <nav className="flex gap-1 overflow-x-auto border-b border-[var(--rule)] px-4 py-2 md:hidden">
+            {NAV.flatMap((s) => s.items).map((item) => {
+              const active =
+                item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="whitespace-nowrap rounded-[6px] px-3 py-1.5 text-[13px]"
+                  style={
+                    active
+                      ? { background: "var(--accent-soft)", color: "var(--accent-ink)", fontWeight: 500 }
+                      : { color: "var(--muted)" }
+                  }
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <main className="min-w-0 flex-1 px-6 py-7 lg:px-[29px]">{children}</main>
+        </div>
       </div>
     </Ctx.Provider>
+  );
+}
+
+/**
+ * The product's mark, drawn for this product.
+ *
+ * A clock face with the hand at nine — the moment a working day starts, which is
+ * the one thing this product records. The sheet is explicit that a black square
+ * with a letter in it is not a mark.
+ */
+function Mark() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+      <circle cx="10" cy="10" r="8.25" fill="none" stroke="var(--accent)" strokeWidth="1.5" />
+      <path d="M10 10V5.5M10 10H6.4" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
   );
 }
 

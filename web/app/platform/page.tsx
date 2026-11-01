@@ -25,7 +25,7 @@ export default function Page() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-neutral-200 bg-white">
+      <header className="border-b border-[var(--rule)] bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
           <span className="font-semibold">AttendanceHR · platform</span>
           <UserButton />
@@ -34,7 +34,7 @@ export default function Page() {
 
       <main className="mx-auto max-w-6xl space-y-10 px-6 py-8">
         <section>
-          <h1 className="text-2xl font-semibold">Platform</h1>
+          <h1 className="text-[24px] font-semibold">Platform</h1>
           <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             <Stat label="Companies" value={usage.orgs} />
             <Stat label="Active" value={usage.activeOrgs} />
@@ -96,10 +96,10 @@ function NewOrg({ plans }: { plans: { _id: Id<"plans">; name: string }[] }) {
 
   return (
     <section>
-      <h2 className="text-lg font-semibold">Onboard a company</h2>
+      <h2 className="text-[16px] font-semibold">Onboard a company</h2>
       <form
         onSubmit={submit}
-        className="mt-3 grid gap-3 rounded-lg border border-neutral-200 bg-white p-4 sm:grid-cols-3"
+        className="mt-3 grid gap-3 rounded-lg border border-[var(--rule)] bg-white p-4 sm:grid-cols-3"
       >
         <Field label="Company name">
           <input required className={INPUT} value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
@@ -118,7 +118,7 @@ function NewOrg({ plans }: { plans: { _id: Id<"plans">; name: string }[] }) {
         </Field>
         <Field label="Plan">
           <select className={INPUT} value={f.planId} onChange={(e) => setF({ ...f, planId: e.target.value })}>
-            <option value="">— none —</option>
+            <option value="">- none -</option>
             {plans.map((p) => (
               <option key={p._id} value={p._id}>{p.name}</option>
             ))}
@@ -128,10 +128,10 @@ function NewOrg({ plans }: { plans: { _id: Id<"plans">; name: string }[] }) {
           <input type="number" min={0} className={INPUT} value={f.trialDays} onChange={(e) => setF({ ...f, trialDays: e.target.value })} />
         </Field>
         <div className="sm:col-span-3">
-          {error && <p className="mb-2 text-sm text-red-700">{error}</p>}
-          {ok && <p className="mb-2 text-sm text-green-800">{ok}</p>}
+          {error && <p className="mb-2 text-sm text-[var(--negative)]">{error}</p>}
+          {ok && <p className="mb-2 text-sm text-[var(--positive)]">{ok}</p>}
           <button className={BUTTON} disabled={busy}>{busy ? "Creating…" : "Create company"}</button>
-          <span className="ml-3 text-xs text-neutral-500">
+          <span className="ml-3 text-xs text-[var(--muted)]">
             Their admin claims the account by signing in with that email.
           </span>
         </div>
@@ -153,25 +153,25 @@ function Orgs({
 
   return (
     <section>
-      <h2 className="text-lg font-semibold">Companies</h2>
-      {error && <p className="mt-2 text-sm text-red-700">{error}</p>}
-      <div className="mt-3 overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 text-neutral-500">
+      <h2 className="text-[16px] font-semibold">Companies</h2>
+      {error && <p className="mt-2 text-sm text-[var(--negative)]">{error}</p>}
+      <div className="card mt-6 overflow-x-auto">
+        <table className="tbl">
+          <thead className="">
             <tr>
               <Th>Company</Th><Th>Plan</Th><Th>Seats</Th><Th>Expires</Th><Th>Status</Th><Th> </Th>
             </tr>
           </thead>
           <tbody>
             {orgs.map((o) => (
-              <tr key={o._id} className="border-b border-neutral-100 last:border-0">
-                <td className="px-4 py-3">
+              <tr key={o._id} className="">
+                <td className="">
                   <div className="font-medium">{o.name}</div>
-                  <div className="text-xs text-neutral-500">{o.timezone}</div>
+                  <div className="text-xs text-[var(--muted)]">{o.timezone}</div>
                 </td>
-                <td className="px-4 py-3">
+                <td className="">
                   <select
-                    className="rounded border border-neutral-300 px-2 py-1 text-xs"
+                    className="rounded border border-[var(--control)] px-2 py-1 text-xs"
                     value={plans.find((p) => p.name === o.planName)?._id ?? ""}
                     onChange={(e) =>
                       e.target.value &&
@@ -183,30 +183,30 @@ function Orgs({
                       }).catch((err) => setError(clean(err)))
                     }
                   >
-                    <option value="">— none —</option>
+                    <option value="">- none -</option>
                     {plans.map((p) => (
                       <option key={p._id} value={p._id}>{p.name}</option>
                     ))}
                   </select>
                 </td>
-                <td className="px-4 py-3 tabular-nums">
+                <td className="num">
                   {o.employees}
                   {o.employeeLimit !== null ? ` / ${o.employeeLimit}` : ""}
-                  {o.overLimit && <span className="ml-1 text-xs text-red-700">over</span>}
+                  {o.overLimit && <span className="ml-1 text-xs text-[var(--negative)]">over</span>}
                 </td>
-                <td className="px-4 py-3 tabular-nums text-xs">
-                  {o.expiresAt ? new Date(o.expiresAt).toISOString().slice(0, 10) : "—"}
+                <td className="num text-xs">
+                  {o.expiresAt ? new Date(o.expiresAt).toISOString().slice(0, 10) : "-"}
                 </td>
-                <td className="px-4 py-3">
+                <td className="">
                   {o.status === "active" ? (
-                    <span className="text-green-800">active</span>
+                    <span className="text-[var(--positive)]">active</span>
                   ) : (
-                    <span className="text-red-700">suspended</span>
+                    <span className="text-[var(--negative)]">suspended</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-right">
+                <td className="text-right">
                   <button
-                    className="text-xs text-blue-700 hover:underline"
+                    className="text-xs text-[var(--accent-ink)] hover:underline"
                     onClick={() =>
                       setStatus({
                         orgId: o._id,
@@ -220,12 +220,12 @@ function Orgs({
               </tr>
             ))}
             {orgs.length === 0 && (
-              <tr><td colSpan={6} className="px-4 py-6 text-neutral-500">No companies yet.</td></tr>
+              <tr><td colSpan={6} className="px-4 py-8 text-[var(--muted)]">No companies yet.</td></tr>
             )}
           </tbody>
         </table>
       </div>
-      <p className="mt-2 text-xs text-neutral-500">
+      <p className="mt-2 text-xs text-[var(--muted)]">
         Suspending blocks sign-in for that company and keeps all their data, so
         reactivating restores it untouched. Nothing here can read their attendance.
       </p>
@@ -240,22 +240,22 @@ function Plans({ plans }: { plans: NonNullable<ReturnType<typeof useQuery<typeof
 
   return (
     <section>
-      <h2 className="text-lg font-semibold">Plans</h2>
-      <div className="mt-3 overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-        <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 text-neutral-500">
+      <h2 className="text-[16px] font-semibold">Plans</h2>
+      <div className="card mt-6 overflow-x-auto">
+        <table className="tbl">
+          <thead className="">
             <tr><Th>Name</Th><Th>Monthly</Th><Th>Annual</Th><Th>Seat limit</Th><Th>Active</Th></tr>
           </thead>
           <tbody>
             {plans.map((p) => (
-              <tr key={p._id} className="border-b border-neutral-100 last:border-0">
-                <td className="px-4 py-3 font-medium">{p.name}</td>
-                <td className="px-4 py-3 tabular-nums">LKR {p.monthlyPrice.toLocaleString()}</td>
-                <td className="px-4 py-3 tabular-nums">LKR {p.annualPrice.toLocaleString()}</td>
-                <td className="px-4 py-3 tabular-nums">{p.employeeLimit}</td>
-                <td className="px-4 py-3">
+              <tr key={p._id} className="">
+                <td className="font-medium">{p.name}</td>
+                <td className="num">LKR {p.monthlyPrice.toLocaleString()}</td>
+                <td className="num">LKR {p.annualPrice.toLocaleString()}</td>
+                <td className="num">{p.employeeLimit}</td>
+                <td className="">
                   <button
-                    className="text-xs text-blue-700 hover:underline"
+                    className="text-xs text-[var(--accent-ink)] hover:underline"
                     onClick={() =>
                       upsert({
                         planId: p._id,
@@ -277,7 +277,7 @@ function Plans({ plans }: { plans: NonNullable<ReturnType<typeof useQuery<typeof
       </div>
 
       <form
-        className="mt-3 grid gap-3 rounded-lg border border-neutral-200 bg-white p-4 sm:grid-cols-5"
+        className="mt-3 grid gap-3 rounded-lg border border-[var(--rule)] bg-white p-4 sm:grid-cols-5"
         onSubmit={async (e) => {
           e.preventDefault();
           setError(null);
@@ -300,7 +300,7 @@ function Plans({ plans }: { plans: NonNullable<ReturnType<typeof useQuery<typeof
         <Field label="Annual (LKR)"><input required type="number" min={0} className={INPUT} value={f.annualPrice} onChange={(e) => setF({ ...f, annualPrice: e.target.value })} /></Field>
         <Field label="Seat limit"><input required type="number" min={1} className={INPUT} value={f.employeeLimit} onChange={(e) => setF({ ...f, employeeLimit: e.target.value })} /></Field>
         <div className="flex items-end"><button className={BUTTON_QUIET}>Add plan</button></div>
-        {error && <p className="text-sm text-red-700 sm:col-span-5">{error}</p>}
+        {error && <p className="text-sm text-[var(--negative)] sm:col-span-5">{error}</p>}
       </form>
     </section>
   );
@@ -309,12 +309,12 @@ function Plans({ plans }: { plans: NonNullable<ReturnType<typeof useQuery<typeof
 function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-lg bg-white p-4 ring-1 ring-neutral-200">
-      <div className="text-2xl font-semibold tabular-nums">{value}</div>
-      <div className="mt-1 text-xs text-neutral-500">{label}</div>
+      <div className="text-[24px] font-semibold tabular-nums">{value}</div>
+      <div className="mt-1 text-xs text-[var(--muted)]">{label}</div>
     </div>
   );
 }
 
 function Centered({ children }: { children: React.ReactNode }) {
-  return <div className="flex min-h-screen items-center justify-center text-neutral-500">{children}</div>;
+  return <div className="flex min-h-screen items-center justify-center text-[var(--muted)]">{children}</div>;
 }

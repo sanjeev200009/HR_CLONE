@@ -23,7 +23,7 @@ function Directory() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold">Directory</h1>
+      <h1 className="text-[24px] font-semibold">Directory</h1>
       <input
         className={`${INPUT} mt-4 max-w-sm`}
         placeholder="Search by name, title or department"
@@ -36,17 +36,17 @@ function Directory() {
           <button
             key={p._id}
             onClick={() => setOpen(p._id)}
-            className="rounded-lg border border-neutral-200 bg-white p-4 text-left hover:border-neutral-400"
+            className="card p-4 text-left hover:border-neutral-400"
           >
             <div className="font-medium">{p.fullName}</div>
-            <div className="text-sm text-neutral-600">{p.jobTitle ?? "—"}</div>
-            <div className="mt-2 text-xs text-neutral-500">
+            <div className="text-sm text-[var(--muted)]">{p.jobTitle ?? "-"}</div>
+            <div className="mt-2 text-xs text-[var(--muted)]">
               {p.department ?? "No department"}
               {p.managerName ? ` · reports to ${p.managerName}` : ""}
             </div>
           </button>
         ))}
-        {people?.length === 0 && <p className="text-neutral-500">Nobody matches that.</p>}
+        {people?.length === 0 && <p className="text-[var(--muted)]">Nobody matches that.</p>}
       </div>
 
       {open && <Profile memberId={open} onClose={() => setOpen(null)} />}
@@ -76,33 +76,33 @@ function Profile({ memberId, onClose }: { memberId: Id<"members">; onClose: () =
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-semibold">{p.fullName}</h2>
-            <p className="text-sm text-neutral-600">{p.jobTitle ?? "—"}</p>
+            <p className="text-sm text-[var(--muted)]">{p.jobTitle ?? "-"}</p>
           </div>
-          <button onClick={onClose} className="text-sm text-neutral-500 hover:underline">
+          <button onClick={onClose} className="text-sm text-[var(--muted)] hover:underline">
             Close
           </button>
         </div>
 
         <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
           <Row label="Email" value={p.email} />
-          <Row label="Department" value={p.department ?? "—"} />
-          <Row label="Manager" value={p.manager?.fullName ?? "—"} />
-          <Row label="Joined" value={p.joinedOn ?? "—"} />
+          <Row label="Department" value={p.department ?? "-"} />
+          <Row label="Manager" value={p.manager?.fullName ?? "-"} />
+          <Row label="Joined" value={p.joinedOn ?? "-"} />
           {/* Contact details only arrive from the server for self, manager or
               admin. The client is not the one deciding this. */}
-          {p.canSeeContact && <Row label="Phone" value={p.phone ?? "—"} />}
-          {p.canSeeContact && <Row label="Emergency" value={p.emergencyContact ?? "—"} />}
+          {p.canSeeContact && <Row label="Phone" value={p.phone ?? "-"} />}
+          {p.canSeeContact && <Row label="Emergency" value={p.emergencyContact ?? "-"} />}
         </dl>
 
-        {p.about && <p className="mt-4 text-sm text-neutral-700">{p.about}</p>}
+        {p.about && <p className="mt-4 text-sm text-[var(--text)]">{p.about}</p>}
 
         {p.reports.length > 0 && (
-          <p className="mt-4 text-sm text-neutral-600">
+          <p className="mt-4 text-sm text-[var(--muted)]">
             Manages: {p.reports.map((r) => r.fullName).join(", ")}
           </p>
         )}
 
-        <div className="mt-6 border-t border-neutral-200 pt-4">
+        <div className="mt-6 border-t border-[var(--rule)] pt-4">
           <h3 className="text-sm font-semibold">Employment (admin)</h3>
           <div className="mt-2 grid grid-cols-2 gap-3">
             <Field label="Job title">
@@ -141,13 +141,13 @@ function Profile({ memberId, onClose }: { memberId: Id<"members">; onClose: () =
           >
             Save employment
           </button>
-          <p className="mt-1 text-xs text-neutral-500">
+          <p className="mt-1 text-xs text-[var(--muted)]">
             Join date drives leave accrual, which is why an employee cannot edit it.
           </p>
         </div>
 
         {!p.isSelf && (
-          <div className="mt-6 border-t border-neutral-200 pt-4">
+          <div className="mt-6 border-t border-[var(--rule)] pt-4">
             <h3 className="text-sm font-semibold">Leave feedback</h3>
             <textarea
               className={`${INPUT} mt-2`}
@@ -158,13 +158,13 @@ function Profile({ memberId, onClose }: { memberId: Id<"members">; onClose: () =
             />
             <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
               <select
-                className="rounded border border-neutral-300 px-2 py-1 text-xs"
+                className="rounded border border-[var(--control)] px-2 py-1 text-xs"
                 value={visibility}
                 onChange={(e) => setVisibility(e.target.value as typeof visibility)}
               >
-                <option value="private">Private — them and their manager</option>
-                <option value="manager">Manager only — hidden from them</option>
-                <option value="team">Team — anyone in the company</option>
+                <option value="private">Private: them and their manager</option>
+                <option value="manager">Manager only, hidden from them</option>
+                <option value="team">Team: anyone in the company</option>
               </select>
               <label className="flex items-center gap-2 text-xs">
                 <input type="checkbox" checked={anon} onChange={(e) => setAnon(e.target.checked)} />
@@ -191,23 +191,23 @@ function Profile({ memberId, onClose }: { memberId: Id<"members">; onClose: () =
                 Send
               </button>
             </div>
-            <p className="mt-1 text-xs text-neutral-500">
-              Anonymous hides your name from the recipient, not from an admin — so there
+            <p className="mt-1 text-xs text-[var(--muted)]">
+              Anonymous hides your name from the recipient, not from an admin, so there
               is always someone accountable for what was written.
             </p>
           </div>
         )}
 
-        {error && <p className="mt-3 text-sm text-red-700">{error}</p>}
+        {error && <p className="mt-3 text-sm text-[var(--negative)]">{error}</p>}
 
         {(notes ?? []).length > 0 && (
-          <div className="mt-6 border-t border-neutral-200 pt-4">
+          <div className="mt-6 border-t border-[var(--rule)] pt-4">
             <h3 className="text-sm font-semibold">Feedback</h3>
             <ul className="mt-2 space-y-3">
               {(notes ?? []).map((n) => (
-                <li key={n._id} className="rounded border border-neutral-200 p-3 text-sm">
+                <li key={n._id} className="rounded border border-[var(--rule)] p-3 text-sm">
                   <p>{n.body}</p>
-                  <p className="mt-1 text-xs text-neutral-500">
+                  <p className="mt-1 text-xs text-[var(--muted)]">
                     {n.fromName ?? "Anonymous"} · {n.visibility}
                     {n.authorHiddenFromRecipient && n.fromName ? " · name hidden from them" : ""}
                   </p>
@@ -224,8 +224,8 @@ function Profile({ memberId, onClose }: { memberId: Id<"members">; onClose: () =
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="text-xs text-neutral-500">{label}</dt>
-      <dd className="text-neutral-900">{value}</dd>
+      <dt className="text-xs text-[var(--muted)]">{label}</dt>
+      <dd className="text-[var(--text)]">{value}</dd>
     </div>
   );
 }
