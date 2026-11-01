@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
-import { ReactNode, createContext, useContext } from "react";
+import { ReactNode, createContext, useContext, useEffect } from "react";
 
 // The shell: a ruled T-frame (the dealt style's §4).
 //
@@ -68,7 +68,16 @@ const NAV: { group: string; items: { href: string; label: string }[] }[] = [
 
 export default function Shell({ children }: { children: ReactNode }) {
   const memberships = useQuery(api.members.me);
+  const claim = useMutation(api.members.claim);
   const pathname = usePathname();
+
+  // First sign-in: bind this Clerk user to the member row an admin pre-created
+  // for their email. The mobile app does this in Home.tsx; without it here, an
+  // admin signing in on the web was never bound and saw "no dashboard access"
+  // forever. members.claim is idempotent and requires a verified email.
+  useEffect(() => {
+    if (memberships?.length === 0) claim().catch(() => {});
+  }, [memberships, claim]);
 
   if (memberships === undefined) return <Centered>Loading…</Centered>;
 
