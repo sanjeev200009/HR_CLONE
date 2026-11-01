@@ -85,18 +85,51 @@ export default function Leave({ orgId, timezone }: Props) {
             </Text>
           )}
 
-          {balances.map((b) => (
-            <View key={b.leaveTypeId} style={s.card}>
-              <Text style={s.rowTitle}>{b.typeName}</Text>
-              <Text style={s.big}>{b.availableDays}</Text>
-              <Text style={s.fine}>
-                days left · {b.entitledDays} entitled
-                {b.carriedDays > 0 ? ` + ${b.carriedDays} carried` : ""} ·{" "}
-                {b.usedDays} taken
-                {b.pendingDays > 0 ? ` · ${b.pendingDays} awaiting approval` : ""}
-              </Text>
-            </View>
-          ))}
+          {balances.map((b, i) => {
+            const pool = b.entitledDays + b.carriedDays;
+            const usedPct = pool > 0 ? Math.min(100, (b.usedDays / pool) * 100) : 0;
+            const tint = i % 2 === 0
+              ? { bg: c.lilacSoft, bar: c.lilac, ink: c.lilacInk }
+              : { bg: c.butterSoft, bar: c.butter, ink: c.butterInk };
+            return (
+              <View key={b.leaveTypeId} style={[s.card, { backgroundColor: tint.bg }]}>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                  <Text style={s.rowTitle}>{b.typeName}</Text>
+                  <View style={[s.pill, { backgroundColor: tint.bar }]}>
+                    <Text style={[s.pillText, { color: tint.ink }]}>
+                      {b.isPaid ? "Paid" : "Unpaid"}
+                    </Text>
+                  </View>
+                </View>
+
+                <Text style={[s.big, { marginTop: 10 }]}>
+                  {b.availableDays}
+                  <Text style={{ fontSize: 15, fontWeight: "400", color: c.muted }}>
+                    {"  "}of {pool} days left
+                  </Text>
+                </Text>
+
+                {/* The ratio is the answer; the numbers behind it are the evidence. */}
+                <View
+                  style={{
+                    height: 8,
+                    borderRadius: 999,
+                    backgroundColor: "rgba(255,255,255,0.75)",
+                    overflow: "hidden",
+                    marginTop: 12,
+                  }}
+                >
+                  <View style={{ width: `${usedPct}%`, height: "100%", backgroundColor: tint.bar }} />
+                </View>
+
+                <Text style={s.fine}>
+                  {b.usedDays} taken · {b.entitledDays} entitled
+                  {b.carriedDays > 0 ? ` + ${b.carriedDays} carried` : ""}
+                  {b.pendingDays > 0 ? ` · ${b.pendingDays} awaiting approval` : ""}
+                </Text>
+              </View>
+            );
+          })}
 
           {balances.length > 0 && (
             <>

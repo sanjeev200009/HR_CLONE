@@ -91,37 +91,26 @@ export default function Home() {
         {tab === "history" && <History orgId={m.orgId} timezone={m.timezone} />}
         {tab === "leave" && <Leave orgId={m.orgId} timezone={m.timezone} />}
         {tab === "pay" && <Pay orgId={m.orgId} />}
-        {tab === "team" && <Team orgId={m.orgId} me={{ fullName: m.fullName }} />}
+        {tab === "team" && (
+          <Team orgId={m.orgId} me={{ fullName: m.fullName }} onSignOut={() => signOut()} />
+        )}
       </View>
 
-      {/* Four tabs now. Still a state switch rather than expo-router: there is
-          no deep linking, no nested stack and no URL to honour on mobile. */}
-      <View style={{ flexDirection: "row", borderTopWidth: 1, borderTopColor: "#eee" }}>
+      {/* A floating capsule, as in the reference, rather than a rule across the
+          bottom. Still a state switch and not expo-router: no deep linking, no
+          nested stack, no URL to honour on mobile. */}
+      <View style={s.tabBar}>
         {(["clock", "history", "leave", "pay", "team"] as const).map((t) => (
           <TouchableOpacity
             key={t}
-            style={{ flex: 1, paddingVertical: 14, alignItems: "center" }}
+            style={[s.tab, tab === t && s.tabOn]}
             onPress={() => setTab(t)}
             accessibilityRole="tab"
             accessibilityState={{ selected: tab === t }}
           >
-            <Text
-              style={{
-                fontSize: 13,
-                fontWeight: tab === t ? "700" : "400",
-                color: tab === t ? c.text : c.muted,
-              }}
-            >
-              {LABELS[t]}
-            </Text>
+            <Text style={tab === t ? s.tabTextOn : s.tabText}>{LABELS[t]}</Text>
           </TouchableOpacity>
         ))}
-        <TouchableOpacity
-          style={{ paddingVertical: 14, paddingHorizontal: 14, alignItems: "center" }}
-          onPress={() => signOut()}
-        >
-          <Text style={{ fontSize: 14, color: c.muted }}>Exit</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );

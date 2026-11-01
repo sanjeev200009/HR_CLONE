@@ -17,9 +17,9 @@ import MyProfile from "./MyProfile";
 // considered act, and a phone list is where you look someone up, not where you
 // write an appraisal. The web dashboard has the full feedback flow.
 
-type Props = { orgId: Id<"organizations">; me: { fullName: string } };
+type Props = { orgId: Id<"organizations">; me: { fullName: string }; onSignOut: () => void };
 
-export default function Team({ orgId, me }: Props) {
+export default function Team({ orgId, me, onSignOut }: Props) {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState<Id<"members"> | null>(null);
   const [editing, setEditing] = useState(false);
@@ -40,9 +40,14 @@ export default function Team({ orgId, me }: Props) {
     <View style={s.screen}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" }}>
         <Text style={s.h1}>Team</Text>
-        <TouchableOpacity onPress={() => setEditing(true)}>
-          <Text style={{ color: c.link, fontSize: 15, paddingBottom: 6 }}>My profile</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: "row", gap: 16, paddingBottom: 6 }}>
+          <TouchableOpacity onPress={() => setEditing(true)}>
+            <Text style={{ color: c.link, fontSize: 15, fontWeight: "500" }}>My profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onSignOut}>
+            <Text style={{ color: c.muted, fontSize: 15 }}>Sign out</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <TextInput
         style={s.input}

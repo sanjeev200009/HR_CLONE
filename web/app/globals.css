@@ -16,45 +16,53 @@
    --------------------------------------------------------------------------- */
 
 :root {
-  --ground: #fbf7f8; /* one step toward the hue's palest tint — the sheet's face */
+  /* Taken from the reference: a warm lilac ground, white cards on generous
+     radii, one lavender and one butter accent, ink for the single primary
+     action. The mobile app carries the same tokens (src/ui.tsx), so the two
+     halves read as one product. */
+  --ground: #f4f1f8;
   --surface: #ffffff;
-  --raised: #f3f4f6;
-  --border: #e5e7eb;
-  --rule: #f2f2f2;
-  --control: #d1d5db;
-  --text: #111827;
-  --muted: #5f6672;
+  --raised: #eeeaf6;
+  --border: #e7e2f0;
+  --rule: #ece8f4;
+  --control: #d9d2e8;
+  --text: #141318;
+  --muted: #6e6880;
 
-  --accent: #b8336a;
-  --accent-soft: #fdf2f7;
-  --accent-track: #f8dbe8;
-  --accent-ink: #6b1d3e;
+  --accent: #c9c0f2;          /* lavender: areas and marks */
+  --accent-soft: #e9e5fb;
+  --accent-track: #ddd6f7;
+  --accent-ink: #4a3f86;
 
-  --positive: #247b50;
-  --negative: #c4242a;
-  --warning: #92400e;
+  --butter: #fbe5a2;          /* the second accent, for the other half of a pair */
+  --butter-soft: #fef4d4;
+  --butter-ink: #7a5b10;
 
-  --chart-1: #b8336a;
-  --chart-2: #6b7280;
-  --chart-3: #d4618f;
+  --positive: #2f7d5b;
+  --negative: #b4384a;
+  --warning: #9a6b12;
 
-  --pill-positive-bg: #dcfce7; --pill-positive-ink: #14532d;
-  --pill-negative-bg: #ffedea; --pill-negative-ink: #831c1e;
-  --pill-warning-bg: #fffbeb;  --pill-warning-ink: #92400e;
-  --pill-neutral-bg: #f3f4f6;  --pill-neutral-ink: #374151;
-  --pill-accent-bg: #fdf2f7;   --pill-accent-ink: #6b1d3e;
+  --chart-1: #c9c0f2;
+  --chart-2: #fbe5a2;
+  --chart-3: #a99be8;
 
-  --radius-card: 8px;
-  --radius-control: 6px;
-  --row-height: 45px;
-  --sidebar-width: 230px;
+  --pill-positive-bg: #def0e6; --pill-positive-ink: #1d5740;
+  --pill-negative-bg: #fbe4e7; --pill-negative-ink: #8b2433;
+  --pill-warning-bg: #fdf0d6;  --pill-warning-ink: #7a5b10;
+  --pill-neutral-bg: #eeeaf6;  --pill-neutral-ink: #4a4556;
+  --pill-accent-bg: #e9e5fb;   --pill-accent-ink: #4a3f86;
+
+  --radius-card: 20px;
+  --radius-control: 999px;
+  --row-height: 48px;
+  --sidebar-width: 236px;
   --gap: 24px;
   --pad: 24px;
-  --control-height: 32px;
+  --control-height: 36px;
 
   --fs-title: 32px;
   --fs-section: 18px;
-  --fs-kpi: 24px;
+  --fs-kpi: 26px;
   --fs-body: 14px;
   --fs-small: 12px;
 }
@@ -100,25 +108,26 @@ table,
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
+  box-shadow: 0 6px 18px rgba(43, 36, 64, 0.05); /* taste-skill-ignore: one soft lift, per the client's reference */
 }
 
 /* The one filled button carries the full hue. Everything else is outlined. */
 .btn {
-  height: 36px;
-  padding: 0 14px;
-  border-radius: var(--radius-control);
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 999px;
   font-size: var(--fs-body);
-  font-weight: 500;
-  background: var(--accent);
+  font-weight: 600;
+  background: var(--text);
   color: #fff;
-  border: 1px solid var(--accent);
+  border: 1px solid var(--text);
 }
 .btn:disabled { opacity: 0.5; }
 
 .btn-quiet {
-  height: 36px;
-  padding: 0 14px;
-  border-radius: var(--radius-control);
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 999px;
   font-size: var(--fs-body);
   font-weight: 500;
   background: var(--surface);
@@ -129,11 +138,11 @@ table,
 .btn-quiet:disabled { opacity: 0.5; }
 
 .input {
-  height: 40px;
+  height: 42px;
   width: 100%;
   padding: 0 12px;
-  border: 1px solid #e8e8e8;
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
   background: var(--surface);
   font-size: var(--fs-body);
   color: var(--text);
@@ -145,7 +154,7 @@ select.input { padding-right: 8px; }
 /* Pills: the tinted areas the style's move allows. */
 .pill {
   display: inline-block;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 999px;
   font-size: var(--fs-small);
   font-weight: 500;
@@ -160,7 +169,7 @@ select.input { padding-right: 8px; }
 /* Progress tracks — area work in the pale tint, the bar in the full hue.
    Used for leave balances: the one place a ratio is the answer. */
 .track {
-  height: 6px;
+  height: 8px;
   border-radius: 999px;
   background: var(--accent-track);
   overflow: hidden;

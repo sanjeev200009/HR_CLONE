@@ -1,21 +1,22 @@
 {
- "url": "http://localhost:3000/",
- "at": "2026-11-01T09:50:30.354Z",
+ "url": "docs/design-harness.html",
+ "at": "2026-11-01T14:16:43.594Z",
  "allow": [],
  "viewports": [
   {
    "width": 1440,
    "height": 900,
    "load": "load",
-   "screens": 1,
+   "screens": 2,
    "filled": [
-    0.15
+    0.55,
+    0.59
    ],
    "motion": {
-    "elements": 3,
-    "css": 2,
+    "elements": 0,
+    "css": 0,
     "transitions": 0,
-    "scripted": 1,
+    "scripted": 0,
     "videos": 0,
     "playingVideos": 0
    },
@@ -25,13 +26,13 @@
      "h": 900
     },
     "page": {
-     "height": 900,
-     "screens": 1,
-     "words": 29,
+     "height": 962,
+     "screens": 1.1,
+     "words": 182,
      "img": 0,
      "video": 0,
      "canvas": 0,
-     "svg": 3,
+     "svg": 1,
      "sections": 0,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
@@ -48,27 +49,27 @@
      "videosNoPoster": 0
     },
     "hero": {
-     "text": "Sign in to AttendanceHR",
-     "words": 4,
-     "chars": 23,
+     "text": "Good day, Nimali",
+     "words": 3,
+     "chars": 16,
      "lines": 1,
-     "size": 17,
-     "vw": 1.2,
+     "size": 24,
+     "vw": 1.7,
      "font": "DM Sans",
-     "weight": 700,
+     "weight": 600,
      "tracking": 0,
-     "leading": 1.41,
-     "top": 237,
+     "leading": 1.2,
+     "top": 92,
      "tag": "h1",
      "kind": "heading",
      "align": "left",
      "position": "left"
     },
     "h1": {
-     "text": "Sign in to AttendanceHR",
-     "words": 4,
+     "text": "Good day, Nimali",
+     "words": 3,
      "lines": 1,
-     "size": 17,
+     "size": 24,
      "font": "DM Sans"
     },
     "headings": [],
@@ -85,25 +86,40 @@
      "families": [
       {
        "family": "DM Sans",
-       "share": 1,
+       "share": 0.97,
+       "mono": false
+      },
+      {
+       "family": "Arial",
+       "share": 0.03,
        "mono": false
       }
      ],
-     "familyCount": 1,
+     "familyCount": 2,
      "sizes": [
       12,
       13,
-      17
+      14,
+      15,
+      16,
+      24
      ],
-     "sizeCount": 3,
+     "sizeCount": 6,
      "notLoaded": [],
-     "body": null,
-     "measureChars": null,
-     "max": {
-      "size": 17,
-      "vw": 1.2,
+     "body": {
       "font": "DM Sans",
-      "text": "Sign in to AttendanceHR"
+      "size": 14,
+      "leading": 1.2,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 4.7
+     },
+     "measureChars": 66,
+     "max": {
+      "size": 24,
+      "vw": 1.7,
+      "font": "DM Sans",
+      "text": "Good day, Nimali"
      },
      "monoShare": 0,
      "monoProseShare": 0,
@@ -113,91 +129,95 @@
      "microLabelShare": 0,
      "microSamples": [],
      "upperShare": 0,
-     "centerShare": 0.67,
-     "smallText": 1
+     "centerShare": 0.03,
+     "smallText": 15
     },
     "eyebrows": [],
     "numbered": [],
     "color": {
-     "bodyBg": "#fbf7f8",
+     "bodyBg": "#f4f1f8",
      "bodyBgHsl": {
-      "h": 345,
+      "h": 266,
       "s": 0.33,
-      "l": 0.98
+      "l": 0.96
      },
      "dark": false,
      "sectionBgs": [],
      "textColors": [
       {
-       "color": "#202026",
-       "share": 0.44
+       "color": "#6e6880",
+       "share": 0.66
       },
       {
-       "color": "#212126",
-       "share": 0.26
+       "color": "#141318",
+       "share": 0.29
       },
       {
-       "color": "#000000",
-       "share": 0.12
-      },
-      {
-       "color": "#f36b16",
-       "share": 0.09
+       "color": "#4a3f86",
+       "share": 0.02
       },
       {
        "color": "#ffffff",
-       "share": 0.05
+       "share": 0.02
+      },
+      {
+       "color": "#1d5740",
+       "share": 0.01
       }
      ],
      "button": {
-      "bg": "#2f3037",
+      "bg": "#e9e5fb",
       "hsl": {
-       "h": 233,
-       "s": 0.08,
-       "l": 0.2
+       "h": 251,
+       "s": 0.73,
+       "l": 0.94
       },
-      "fg": "#ffffff"
+      "fg": "#4a3f86"
      },
      "lowContrast": []
     },
     "buttons": {
-     "count": 1,
-     "inHero": 1,
-     "radius": 6,
-     "height": 32,
-     "withShadow": 1,
+     "count": 5,
+     "inHero": 5,
+     "radius": "pill",
+     "height": 38,
+     "withShadow": 0,
      "withGradient": 0,
      "mono": 0,
      "upper": 0,
      "heroLabels": [
-      "Continue"
+      "Who is in",
+      "Review 4 waiting",
+      "Timesheets 1",
+      "Attendance corrections 1",
+      "Open attendance"
      ]
     },
     "surfaces": {
-     "shadowStatic": 6,
+     "shadowStatic": 5,
      "shadowOverlay": 0,
      "shadowSamples": [
-      "div.cl-cardBox.cl-signIn-start → color(srgb 0 0 0 / 0.08) 0px 5px 15px 0px, color(srgb 0 0 0 / 0.2) 0px 15px 35px",
-      "div.cl-card.cl-signIn-start → color(srgb 0 0 0 / 0.08) 0px 0px 2px 0px, color(srgb 0 0 0 / 0.06) 0px 1px 2px 0",
-      "button.cl-socialButtonsBlockButton.cl-button → color(srgb 0 0 0 / 0.07) 0px 0px 0px 1px, rgba(0, 0, 0, 0.08) 0px 2px 3px -1px, ",
-      "input#identifier-field.cl-formFieldInput.cl-input → color(srgb 0 0 0 / 0.11) 0px 0px 0px 1px, color(srgb 0 0 0 / 0.07) 0px 0px 1px 0"
+      "div.card.kpis → rgba(43, 36, 64, 0.05) 0px 6px 18px 0px",
+      "div.card.scroll → rgba(43, 36, 64, 0.05) 0px 6px 18px 0px",
+      "div.card → rgba(43, 36, 64, 0.05) 0px 6px 18px 0px",
+      "div.card.queue → rgba(43, 36, 64, 0.05) 0px 6px 18px 0px"
      ],
-     "gradients": 1,
+     "gradients": 0,
      "scrims": 0,
-     "gradientSamples": [
-      "div.cl-footer.🔒️ → linear-gradient(color(srgb 0 0 0 / 0.03), color(srgb 0 0 0 / 0.03)), linear-gradient(color(srgb 1 1 1), color("
-     ],
+     "gradientSamples": [],
      "gradientText": 0,
-     "hairlines": 2,
+     "hairlines": 4,
      "hairlineSamples": [
-      "div.cl-footerItem.🔒️ 400px",
-      "div.cl-internal-1e9vb3w 400px rule"
+      "aside 230px",
+      "header 1210px",
+      "a 382px",
+      "a 382px"
      ],
-     "outlinedBoxes": 0,
+     "outlinedBoxes": 5,
      "dashed": 0,
      "blurred": 0,
-     "roundedBoxes": 1,
-     "boxRadius": 8,
+     "roundedBoxes": 5,
+     "boxRadius": 20,
      "squareMedia": 0,
      "roundedMedia": 0,
      "mediaRadius": 0,
@@ -205,7 +225,13 @@
      "cardRows": []
     },
     "heroMedia": [],
-    "nav": null,
+    "nav": {
+     "links": 1,
+     "fixed": false,
+     "height": 532,
+     "floatingPill": false,
+     "blur": false
+    },
     "fontsLoaded": [
      "dm sans"
     ]
@@ -215,34 +241,43 @@
      "w": 1440,
      "h": 900
     },
-    "pageH": 900,
+    "pageH": 962,
     "margins": {
-     "left": 559,
-     "right": 559
+     "left": 24,
+     "right": 85
     },
     "sections": [],
     "gaps": [],
     "h1s": [
      {
-      "text": "Sign in to AttendanceHR",
-      "size": 17,
-      "top": 237,
+      "text": "Good day, Nimali",
+      "size": 24,
+      "top": 92,
       "firstScreen": true
      }
     ],
     "edgeText": [],
-    "edges": [],
-    "leftBlocks": 0,
-    "bodySize": 13,
+    "edges": [
+     {
+      "x": 259,
+      "n": 4
+     },
+     {
+      "x": 1027,
+      "n": 2
+     }
+    ],
+    "leftBlocks": 6,
+    "bodySize": 12,
     "stage": false,
     "explains": false,
     "slivers": [],
-    "voidShare": 0.33,
+    "voidShare": 0.13,
     "voidBox": {
-     "x": 0,
-     "y": 120,
-     "w": 540,
-     "h": 780
+     "x": 480,
+     "y": 720,
+     "w": 960,
+     "h": 180
     }
    },
    "app": {
@@ -251,25 +286,32 @@
      "h": 900
     },
     "dark": false,
-    "ground": "#fbf7f8",
-    "sidebar": null,
-    "topbar": null,
+    "ground": "#f4f1f8",
+    "sidebar": {
+     "w": 230,
+     "tag": "aside",
+     "links": 10,
+     "share": 0.16
+    },
+    "topbar": {
+     "h": 64
+    },
     "canvas": {
-     "left": 559,
-     "right": 559
+     "left": 29,
+     "right": 48
     },
     "hero": {
-     "text": "Sign in to AttendanceHR",
-     "words": 4,
-     "chars": 23,
+     "text": "Good day, Nimali",
+     "words": 3,
+     "chars": 16,
      "lines": 1,
-     "size": 17,
-     "vw": 1.2,
+     "size": 24,
+     "vw": 1.7,
      "font": "DM Sans",
-     "weight": 700,
+     "weight": 600,
      "tracking": 0,
-     "leading": 1.41,
-     "top": 237,
+     "leading": 1.2,
+     "top": 92,
      "tag": "h1",
      "kind": "heading",
      "align": "left",
@@ -277,34 +319,29 @@
     },
     "charts": 0,
     "layout": {
-     "panels": 1,
-     "firstScreen": 1,
-     "ragged": [],
+     "panels": 5,
+     "firstScreen": 5,
+     "ragged": [
+      {
+       "diff": 252,
+       "top": 359
+      }
+     ],
      "voids": []
     },
     "tiles": 0,
     "panels": {
-     "count": 3,
+     "count": 5,
      "radii": [
       [
-       12,
-       1
-      ],
-      [
-       8,
-       1
-      ],
-      [
-       0,
-       1
+       20,
+       5
       ]
      ],
-     "heavyBorders": 1,
-     "borderSamples": [
-      "#000000 on #fbf7f8 (19.76:1)"
-     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
      "heavyShadows": 0,
-     "softShadows": 0,
+     "softShadows": 5,
      "shadowSamples": [],
      "glass": 0
     },
@@ -320,25 +357,31 @@
      "tabularShare": null,
      "kpiMax": null
     },
-    "rows": null,
+    "rows": {
+     "count": 6,
+     "median": 59
+    },
     "chartHues": 0,
     "placeholders": [],
     "type": {
-     "under13": 0.15,
+     "under13": 0.38,
      "tiny": 0,
      "tinySamples": [],
      "sizes": [
       12,
       13,
-      17
+      14,
+      15,
+      16,
+      24
      ]
     },
     "title": {
-     "text": "Sign in to AttendanceHR",
-     "size": 17,
-     "top": 237
+     "text": "Good day, Nimali",
+     "size": 24,
+     "top": 92
     },
-    "colourShare": 0.001
+    "colourShare": 0
    },
    "consoleErrors": []
   },
@@ -346,15 +389,16 @@
    "width": 768,
    "height": 1024,
    "load": "load",
-   "screens": 1,
+   "screens": 2,
    "filled": [
-    0.23
+    0.48,
+    0.52
    ],
    "motion": {
-    "elements": 3,
-    "css": 2,
+    "elements": 0,
+    "css": 0,
     "transitions": 0,
-    "scripted": 1,
+    "scripted": 0,
     "videos": 0,
     "playingVideos": 0
    },
@@ -364,13 +408,13 @@
      "h": 1024
     },
     "page": {
-     "height": 1024,
-     "screens": 1,
-     "words": 29,
+     "height": 1541,
+     "screens": 1.5,
+     "words": 182,
      "img": 0,
      "video": 0,
      "canvas": 0,
-     "svg": 3,
+     "svg": 1,
      "sections": 0,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
@@ -387,27 +431,27 @@
      "videosNoPoster": 0
     },
     "hero": {
-     "text": "Sign in to AttendanceHR",
-     "words": 4,
-     "chars": 23,
+     "text": "Good day, Nimali",
+     "words": 3,
+     "chars": 16,
      "lines": 1,
-     "size": 17,
-     "vw": 2.2,
+     "size": 24,
+     "vw": 3.1,
      "font": "DM Sans",
-     "weight": 700,
+     "weight": 600,
      "tracking": 0,
-     "leading": 1.41,
-     "top": 299,
+     "leading": 1.2,
+     "top": 92,
      "tag": "h1",
      "kind": "heading",
      "align": "left",
      "position": "left"
     },
     "h1": {
-     "text": "Sign in to AttendanceHR",
-     "words": 4,
+     "text": "Good day, Nimali",
+     "words": 3,
      "lines": 1,
-     "size": 17,
+     "size": 24,
      "font": "DM Sans"
     },
     "headings": [],
@@ -424,25 +468,40 @@
      "families": [
       {
        "family": "DM Sans",
-       "share": 1,
+       "share": 0.97,
+       "mono": false
+      },
+      {
+       "family": "Arial",
+       "share": 0.03,
        "mono": false
       }
      ],
-     "familyCount": 1,
+     "familyCount": 2,
      "sizes": [
       12,
       13,
-      17
+      14,
+      15,
+      16,
+      24
      ],
-     "sizeCount": 3,
+     "sizeCount": 6,
      "notLoaded": [],
-     "body": null,
-     "measureChars": null,
-     "max": {
-      "size": 17,
-      "vw": 2.2,
+     "body": {
       "font": "DM Sans",
-      "text": "Sign in to AttendanceHR"
+      "size": 14,
+      "leading": 1.2,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 4.7
+     },
+     "measureChars": 66,
+     "max": {
+      "size": 24,
+      "vw": 3.1,
+      "font": "DM Sans",
+      "text": "Good day, Nimali"
      },
      "monoShare": 0,
      "monoProseShare": 0,
@@ -452,99 +511,113 @@
      "microLabelShare": 0,
      "microSamples": [],
      "upperShare": 0,
-     "centerShare": 0.67,
-     "smallText": 1
+     "centerShare": 0.03,
+     "smallText": 15
     },
     "eyebrows": [],
     "numbered": [],
     "color": {
-     "bodyBg": "#fbf7f8",
+     "bodyBg": "#f4f1f8",
      "bodyBgHsl": {
-      "h": 345,
+      "h": 266,
       "s": 0.33,
-      "l": 0.98
+      "l": 0.96
      },
      "dark": false,
      "sectionBgs": [],
      "textColors": [
       {
-       "color": "#202026",
-       "share": 0.44
+       "color": "#6e6880",
+       "share": 0.66
       },
       {
-       "color": "#212126",
-       "share": 0.26
+       "color": "#141318",
+       "share": 0.29
       },
       {
-       "color": "#000000",
-       "share": 0.12
-      },
-      {
-       "color": "#f36b16",
-       "share": 0.09
+       "color": "#4a3f86",
+       "share": 0.02
       },
       {
        "color": "#ffffff",
-       "share": 0.05
+       "share": 0.02
+      },
+      {
+       "color": "#1d5740",
+       "share": 0.01
       }
      ],
      "button": {
-      "bg": "#2f3037",
+      "bg": "#e9e5fb",
       "hsl": {
-       "h": 233,
-       "s": 0.08,
-       "l": 0.2
+       "h": 251,
+       "s": 0.73,
+       "l": 0.94
       },
-      "fg": "#ffffff"
+      "fg": "#4a3f86"
      },
      "lowContrast": []
     },
     "buttons": {
-     "count": 1,
-     "inHero": 1,
-     "radius": 6,
-     "height": 32,
-     "withShadow": 1,
+     "count": 5,
+     "inHero": 2,
+     "radius": "pill",
+     "height": 38,
+     "withShadow": 0,
      "withGradient": 0,
      "mono": 0,
      "upper": 0,
      "heroLabels": [
-      "Continue"
+      "Who is in",
+      "Review 4 waiting"
      ]
     },
     "surfaces": {
-     "shadowStatic": 6,
+     "shadowStatic": 5,
      "shadowOverlay": 0,
      "shadowSamples": [
-      "div.cl-cardBox.cl-signIn-start → color(srgb 0 0 0 / 0.08) 0px 5px 15px 0px, color(srgb 0 0 0 / 0.2) 0px 15px 35px",
-      "div.cl-card.cl-signIn-start → color(srgb 0 0 0 / 0.08) 0px 0px 2px 0px, color(srgb 0 0 0 / 0.06) 0px 1px 2px 0",
-      "button.cl-socialButtonsBlockButton.cl-button → color(srgb 0 0 0 / 0.07) 0px 0px 0px 1px, rgba(0, 0, 0, 0.08) 0px 2px 3px -1px, ",
-      "input#identifier-field.cl-formFieldInput.cl-input → color(srgb 0 0 0 / 0.11) 0px 0px 0px 1px, color(srgb 0 0 0 / 0.07) 0px 0px 1px 0"
+      "div.card.kpis → rgba(43, 36, 64, 0.05) 0px 6px 18px 0px",
+      "div.card.scroll → rgba(43, 36, 64, 0.05) 0px 6px 18px 0px",
+      "div.card → rgba(43, 36, 64, 0.05) 0px 6px 18px 0px",
+      "div.card.queue → rgba(43, 36, 64, 0.05) 0px 6px 18px 0px"
      ],
-     "gradients": 1,
+     "gradients": 0,
      "scrims": 0,
-     "gradientSamples": [
-      "div.cl-footer.🔒️ → linear-gradient(color(srgb 0 0 0 / 0.03), color(srgb 0 0 0 / 0.03)), linear-gradient(color(srgb 1 1 1), color("
-     ],
+     "gradientSamples": [],
      "gradientText": 0,
-     "hairlines": 2,
+     "hairlines": 4,
      "hairlineSamples": [
-      "div.cl-footerItem.🔒️ 400px",
-      "div.cl-internal-1e9vb3w 400px rule"
+      "aside 230px",
+      "header 538px",
+      "a 478px",
+      "a 478px"
      ],
-     "outlinedBoxes": 0,
+     "outlinedBoxes": 5,
      "dashed": 0,
      "blurred": 0,
-     "roundedBoxes": 1,
-     "boxRadius": 8,
+     "roundedBoxes": 5,
+     "boxRadius": 20,
      "squareMedia": 0,
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
-     "cardRows": []
+     "cardRows": [
+      {
+       "count": 6,
+       "iconTopped": false,
+       "rounded": false,
+       "top": 254
+      }
+     ]
     },
     "heroMedia": [],
-    "nav": null,
+    "nav": {
+     "links": 1,
+     "fixed": false,
+     "height": 532,
+     "floatingPill": false,
+     "blur": false
+    },
     "fontsLoaded": [
      "dm sans"
     ]
@@ -554,25 +627,73 @@
      "w": 768,
      "h": 1024
     },
-    "pageH": 1024,
+    "pageH": 1541,
     "margins": {
-     "left": 223,
-     "right": 223
+     "left": 24,
+     "right": 53
     },
-    "sections": [],
+    "sections": [
+     {
+      "sel": "div.card.kpis",
+      "tag": "div",
+      "top": 253,
+      "height": 230,
+      "words": 29,
+      "media": 0,
+      "middle": 62,
+      "heading": null,
+      "left": 280,
+      "right": 90,
+      "textLeft": 280,
+      "textRight": 90,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.cols",
+      "tag": "div",
+      "top": 507,
+      "height": 1006,
+      "words": 98,
+      "media": 0,
+      "middle": 30,
+      "heading": {
+       "text": "Who is in",
+       "size": 16,
+       "tag": "h2"
+      },
+      "left": 259,
+      "right": 29,
+      "textLeft": 259,
+      "textRight": 29,
+      "fullBleed": false,
+      "footer": true,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     }
+    ],
     "gaps": [],
     "h1s": [
      {
-      "text": "Sign in to AttendanceHR",
-      "size": 17,
-      "top": 299,
+      "text": "Good day, Nimali",
+      "size": 24,
+      "top": 92,
       "firstScreen": true
      }
     ],
     "edgeText": [],
-    "edges": [],
-    "leftBlocks": 0,
-    "bodySize": 13,
+    "edges": [
+     {
+      "x": 259,
+      "n": 6
+     }
+    ],
+    "leftBlocks": 6,
+    "bodySize": 12,
     "stage": false,
     "explains": false,
     "slivers": [],
@@ -585,25 +706,32 @@
      "h": 1024
     },
     "dark": false,
-    "ground": "#fbf7f8",
-    "sidebar": null,
-    "topbar": null,
+    "ground": "#f4f1f8",
+    "sidebar": {
+     "w": 230,
+     "tag": "aside",
+     "links": 10,
+     "share": 0.3
+    },
+    "topbar": {
+     "h": 64
+    },
     "canvas": {
-     "left": 223,
-     "right": 223
+     "left": 29,
+     "right": 30
     },
     "hero": {
-     "text": "Sign in to AttendanceHR",
-     "words": 4,
-     "chars": 23,
+     "text": "Good day, Nimali",
+     "words": 3,
+     "chars": 16,
      "lines": 1,
-     "size": 17,
-     "vw": 2.2,
+     "size": 24,
+     "vw": 3.1,
      "font": "DM Sans",
-     "weight": 700,
+     "weight": 600,
      "tracking": 0,
-     "leading": 1.41,
-     "top": 299,
+     "leading": 1.2,
+     "top": 92,
      "tag": "h1",
      "kind": "heading",
      "align": "left",
@@ -611,34 +739,28 @@
     },
     "charts": 0,
     "layout": {
-     "panels": 1,
-     "firstScreen": 1,
+     "panels": 5,
+     "firstScreen": 2,
      "ragged": [],
      "voids": []
     },
     "tiles": 0,
     "panels": {
-     "count": 3,
+     "count": 11,
      "radii": [
       [
-       12,
-       1
-      ],
-      [
-       8,
-       1
-      ],
-      [
        0,
-       1
+       6
+      ],
+      [
+       20,
+       5
       ]
      ],
-     "heavyBorders": 1,
-     "borderSamples": [
-      "#000000 on #fbf7f8 (19.76:1)"
-     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
      "heavyShadows": 0,
-     "softShadows": 0,
+     "softShadows": 5,
      "shadowSamples": [],
      "glass": 0
     },
@@ -654,23 +776,29 @@
      "tabularShare": null,
      "kpiMax": null
     },
-    "rows": null,
+    "rows": {
+     "count": 6,
+     "median": 61
+    },
     "chartHues": 0,
     "placeholders": [],
     "type": {
-     "under13": 0.15,
+     "under13": 0.38,
      "tiny": 0,
      "tinySamples": [],
      "sizes": [
       12,
       13,
-      17
+      14,
+      15,
+      16,
+      24
      ]
     },
     "title": {
-     "text": "Sign in to AttendanceHR",
-     "size": 17,
-     "top": 299
+     "text": "Good day, Nimali",
+     "size": 24,
+     "top": 92
     },
     "colourShare": 0.001
    },
@@ -680,15 +808,16 @@
    "width": 390,
    "height": 844,
    "load": "load",
-   "screens": 1,
+   "screens": 2,
    "filled": [
-    0.55
+    0.64,
+    0.71
    ],
    "motion": {
-    "elements": 3,
-    "css": 2,
+    "elements": 0,
+    "css": 0,
     "transitions": 0,
-    "scripted": 1,
+    "scripted": 0,
     "videos": 0,
     "playingVideos": 0
    },
@@ -698,13 +827,13 @@
      "h": 844
     },
     "page": {
-     "height": 844,
-     "screens": 1,
-     "words": 29,
+     "height": 1667,
+     "screens": 2,
+     "words": 166,
      "img": 0,
      "video": 0,
      "canvas": 0,
-     "svg": 3,
+     "svg": 1,
      "sections": 0,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
@@ -715,68 +844,272 @@
      "uiPictures": 0,
      "pictureSamples": [],
      "blendText": 0,
-     "sideScrollers": 0,
+     "sideScrollers": 1,
      "brokenImages": [],
      "emoji": [],
      "videosNoPoster": 0
     },
     "hero": {
-     "text": "Sign in to AttendanceHR",
-     "words": 4,
-     "chars": 23,
+     "text": "Good day, Nimali",
+     "words": 3,
+     "chars": 16,
      "lines": 1,
-     "size": 17,
-     "vw": 4.4,
+     "size": 24,
+     "vw": 6.2,
      "font": "DM Sans",
-     "weight": 700,
+     "weight": 600,
      "tracking": 0,
-     "leading": 1.41,
-     "top": 209,
+     "leading": 1.2,
+     "top": 92,
      "tag": "h1",
      "kind": "heading",
      "align": "left",
      "position": "left"
     },
     "h1": {
-     "text": "Sign in to AttendanceHR",
-     "words": 4,
+     "text": "Good day, Nimali",
+     "words": 3,
      "lines": 1,
-     "size": 17,
+     "size": 24,
      "font": "DM Sans"
     },
-    "headings": [],
+    "headings": [
+     {
+      "text": "Good day, Nimali",
+      "words": 3,
+      "chars": 16,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "DM Sans",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.85,
+      "top": 92,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "9",
+      "words": 1,
+      "chars": 1,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "DM Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.32,
+      "top": 311,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "5",
+      "words": 1,
+      "chars": 1,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "DM Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.32,
+      "top": 311,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "1",
+      "words": 1,
+      "chars": 1,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "DM Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.32,
+      "top": 417,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "2",
+      "words": 1,
+      "chars": 1,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "DM Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.32,
+      "top": 417,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "1",
+      "words": 1,
+      "chars": 1,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "DM Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.32,
+      "top": 523,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "1",
+      "words": 1,
+      "chars": 1,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "DM Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.32,
+      "top": 523,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "38 of 126 days",
+      "words": 4,
+      "chars": 14,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "DM Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.76,
+      "top": 1161,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "3",
+      "words": 1,
+      "chars": 1,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "DM Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.76,
+      "top": 1517,
+      "tag": "div",
+      "kind": "heading"
+     }
+    ],
     "headingSummary": {
-     "count": 0,
-     "maxLines": 0,
+     "count": 9,
+     "maxLines": 1,
      "over2Lines": 0,
      "statements": 0,
      "centered": 0,
-     "medianWords": null,
+     "medianWords": 1,
      "mixedFontHeadings": 0
     },
     "type": {
      "families": [
       {
        "family": "DM Sans",
-       "share": 1,
+       "share": 0.97,
+       "mono": false
+      },
+      {
+       "family": "Arial",
+       "share": 0.03,
        "mono": false
       }
      ],
-     "familyCount": 1,
+     "familyCount": 2,
      "sizes": [
       12,
       13,
-      17
+      14,
+      16,
+      24
      ],
-     "sizeCount": 3,
+     "sizeCount": 5,
      "notLoaded": [],
-     "body": null,
-     "measureChars": null,
-     "max": {
-      "size": 17,
-      "vw": 4.4,
+     "body": {
       "font": "DM Sans",
-      "text": "Sign in to AttendanceHR"
+      "size": 14,
+      "leading": 1.2,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 4.7
+     },
+     "measureChars": 47,
+     "max": {
+      "size": 24,
+      "vw": 6.2,
+      "font": "DM Sans",
+      "text": "Good day, Nimali"
      },
      "monoShare": 0,
      "monoProseShare": 0,
@@ -786,23 +1119,54 @@
      "microLabelShare": 0,
      "microSamples": [],
      "upperShare": 0,
-     "centerShare": 0.67,
-     "smallText": 1
+     "centerShare": 0.03,
+     "smallText": 15
     },
-    "eyebrows": [],
+    "eyebrows": [
+     {
+      "text": "2026-11-01 · Asia/Colombo",
+      "above": "9",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12,
+      "top": 231
+     },
+     {
+      "text": "2026-11-01 · Asia/Colombo",
+      "above": "5",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12,
+      "top": 231
+     },
+     {
+      "text": "Company-wide, this leave year",
+      "above": "38 of 126 days",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 12,
+      "top": 1141
+     }
+    ],
     "numbered": [],
     "color": {
-     "bodyBg": "#fbf7f8",
+     "bodyBg": "#f4f1f8",
      "bodyBgHsl": {
-      "h": 345,
+      "h": 266,
       "s": 0.33,
-      "l": 0.98
+      "l": 0.96
      },
      "dark": false,
      "sectionBgs": [
       {
        "color": "#ffffff",
-       "top": 177,
+       "top": 271,
        "hsl": {
         "h": 0,
         "s": 0,
@@ -812,83 +1176,95 @@
      ],
      "textColors": [
       {
-       "color": "#202026",
-       "share": 0.44
+       "color": "#6e6880",
+       "share": 0.64
       },
       {
-       "color": "#212126",
-       "share": 0.26
-      },
-      {
-       "color": "#000000",
-       "share": 0.12
-      },
-      {
-       "color": "#f36b16",
-       "share": 0.09
+       "color": "#141318",
+       "share": 0.31
       },
       {
        "color": "#ffffff",
-       "share": 0.05
+       "share": 0.02
+      },
+      {
+       "color": "#4a3f86",
+       "share": 0.01
+      },
+      {
+       "color": "#1d5740",
+       "share": 0.01
       }
      ],
      "button": {
-      "bg": "#2f3037",
+      "bg": "#141318",
       "hsl": {
-       "h": 233,
-       "s": 0.08,
-       "l": 0.2
+       "h": 252,
+       "s": 0.12,
+       "l": 0.08
       },
       "fg": "#ffffff"
      },
      "lowContrast": []
     },
     "buttons": {
-     "count": 1,
+     "count": 4,
      "inHero": 1,
-     "radius": 6,
-     "height": 32,
-     "withShadow": 1,
+     "radius": "pill",
+     "height": 38,
+     "withShadow": 0,
      "withGradient": 0,
      "mono": 0,
      "upper": 0,
      "heroLabels": [
-      "Continue"
+      "Review 4 waiting"
      ]
     },
     "surfaces": {
-     "shadowStatic": 6,
+     "shadowStatic": 5,
      "shadowOverlay": 0,
      "shadowSamples": [
-      "div.cl-cardBox.cl-signIn-start → color(srgb 0 0 0 / 0.08) 0px 5px 15px 0px, color(srgb 0 0 0 / 0.2) 0px 15px 35px",
-      "div.cl-card.cl-signIn-start → color(srgb 0 0 0 / 0.08) 0px 0px 2px 0px, color(srgb 0 0 0 / 0.06) 0px 1px 2px 0",
-      "button.cl-socialButtonsBlockButton.cl-button → color(srgb 0 0 0 / 0.07) 0px 0px 0px 1px, rgba(0, 0, 0, 0.08) 0px 2px 3px -1px, ",
-      "input#identifier-field.cl-formFieldInput.cl-input → color(srgb 0 0 0 / 0.11) 0px 0px 0px 1px, color(srgb 0 0 0 / 0.07) 0px 0px 1px 0"
+      "div.card.kpis → rgba(43, 36, 64, 0.05) 0px 6px 18px 0px",
+      "div.card.scroll → rgba(43, 36, 64, 0.05) 0px 6px 18px 0px",
+      "div.card → rgba(43, 36, 64, 0.05) 0px 6px 18px 0px",
+      "div.card.queue → rgba(43, 36, 64, 0.05) 0px 6px 18px 0px"
      ],
-     "gradients": 1,
+     "gradients": 0,
      "scrims": 0,
-     "gradientSamples": [
-      "div.cl-footer.🔒️ → linear-gradient(color(srgb 0 0 0 / 0.03), color(srgb 0 0 0 / 0.03)), linear-gradient(color(srgb 1 1 1), color("
-     ],
+     "gradientSamples": [],
      "gradientText": 0,
-     "hairlines": 2,
+     "hairlines": 3,
      "hairlineSamples": [
-      "div.cl-footerItem.🔒️ 350px",
-      "div.cl-internal-1e9vb3w 350px rule"
+      "header 390px",
+      "a 330px",
+      "a 330px"
      ],
-     "outlinedBoxes": 0,
+     "outlinedBoxes": 5,
      "dashed": 0,
      "blurred": 0,
-     "roundedBoxes": 1,
-     "boxRadius": 8,
+     "roundedBoxes": 5,
+     "boxRadius": 20,
      "squareMedia": 0,
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
-     "cardRows": []
+     "cardRows": [
+      {
+       "count": 6,
+       "iconTopped": false,
+       "rounded": false,
+       "top": 272
+      }
+     ]
     },
     "heroMedia": [],
-    "nav": null,
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 0,
+     "floatingPill": false,
+     "blur": false
+    },
     "fontsLoaded": [
      "dm sans"
     ]
@@ -898,29 +1274,29 @@
      "w": 390,
      "h": 844
     },
-    "pageH": 844,
+    "pageH": 1667,
     "margins": {
-     "left": 59,
-     "right": 59
+     "left": 29,
+     "right": 29
     },
     "sections": [
      {
-      "sel": "div.cl-card.cl-signIn-start",
+      "sel": "div.titlerow",
       "tag": "div",
-      "top": 177,
-      "height": 362,
-      "words": 18,
+      "top": 92,
+      "height": 123,
+      "words": 20,
       "media": 0,
       "middle": 0,
       "heading": {
-       "text": "Sign in to AttendanceHR",
-       "size": 17,
+       "text": "Good day, Nimali",
+       "size": 24,
        "tag": "h1"
       },
-      "left": 59,
-      "right": 59,
-      "textLeft": 59,
-      "textRight": 71,
+      "left": 29,
+      "right": 31,
+      "textLeft": 29,
+      "textRight": 31,
       "fullBleed": false,
       "footer": false,
       "hero": true,
@@ -928,18 +1304,41 @@
       "pinned": false
      },
      {
-      "sel": "div.cl-footer.🔒️",
+      "sel": "div.card.kpis",
       "tag": "div",
-      "top": 531,
-      "height": 135,
-      "words": 10,
+      "top": 271,
+      "height": 320,
+      "words": 29,
+      "media": 0,
+      "middle": 45,
+      "heading": null,
+      "left": 50,
+      "right": 77,
+      "textLeft": 50,
+      "textRight": 77,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.cols",
+      "tag": "div",
+      "top": 615,
+      "height": 1024,
+      "words": 91,
       "media": 0,
       "middle": 0,
-      "heading": null,
-      "left": 100,
-      "right": 100,
-      "textLeft": 100,
-      "textRight": 100,
+      "heading": {
+       "text": "Who is in",
+       "size": 16,
+       "tag": "h2"
+      },
+      "left": 29,
+      "right": 29,
+      "textLeft": 29,
+      "textRight": 29,
       "fullBleed": false,
       "footer": true,
       "hero": false,
@@ -950,16 +1349,21 @@
     "gaps": [],
     "h1s": [
      {
-      "text": "Sign in to AttendanceHR",
-      "size": 17,
-      "top": 209,
+      "text": "Good day, Nimali",
+      "size": 24,
+      "top": 92,
       "firstScreen": true
      }
     ],
     "edgeText": [],
-    "edges": [],
-    "leftBlocks": 0,
-    "bodySize": 13,
+    "edges": [
+     {
+      "x": 29,
+      "n": 6
+     }
+    ],
+    "leftBlocks": 6,
+    "bodySize": 12,
     "stage": false,
     "explains": false,
     "slivers": [],
@@ -972,25 +1376,27 @@
      "h": 844
     },
     "dark": false,
-    "ground": "#fbf7f8",
+    "ground": "#f4f1f8",
     "sidebar": null,
-    "topbar": null,
+    "topbar": {
+     "h": 64
+    },
     "canvas": {
-     "left": 59,
-     "right": 59
+     "left": 29,
+     "right": -67
     },
     "hero": {
-     "text": "Sign in to AttendanceHR",
-     "words": 4,
-     "chars": 23,
+     "text": "Good day, Nimali",
+     "words": 3,
+     "chars": 16,
      "lines": 1,
-     "size": 17,
-     "vw": 4.4,
+     "size": 24,
+     "vw": 6.2,
      "font": "DM Sans",
-     "weight": 700,
+     "weight": 600,
      "tracking": 0,
-     "leading": 1.41,
-     "top": 209,
+     "leading": 1.2,
+     "top": 92,
      "tag": "h1",
      "kind": "heading",
      "align": "left",
@@ -998,34 +1404,28 @@
     },
     "charts": 0,
     "layout": {
-     "panels": 1,
-     "firstScreen": 1,
+     "panels": 5,
+     "firstScreen": 2,
      "ragged": [],
      "voids": []
     },
     "tiles": 0,
     "panels": {
-     "count": 3,
+     "count": 12,
      "radii": [
       [
-       12,
-       1
-      ],
-      [
-       8,
-       1
-      ],
-      [
        0,
-       1
+       7
+      ],
+      [
+       20,
+       5
       ]
      ],
-     "heavyBorders": 1,
-     "borderSamples": [
-      "#000000 on #fbf7f8 (19.76:1)"
-     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
      "heavyShadows": 0,
-     "softShadows": 0,
+     "softShadows": 5,
      "shadowSamples": [],
      "glass": 0
     },
@@ -1041,58 +1441,42 @@
      "tabularShare": null,
      "kpiMax": null
     },
-    "rows": null,
+    "rows": {
+     "count": 6,
+     "median": 61
+    },
     "chartHues": 0,
     "placeholders": [],
     "type": {
-     "under13": 0.15,
+     "under13": 0.38,
      "tiny": 0,
      "tinySamples": [],
      "sizes": [
       12,
       13,
-      17
+      14,
+      15,
+      16,
+      24
      ]
     },
     "title": {
-     "text": "Sign in to AttendanceHR",
-     "size": 17,
-     "top": 209
+     "text": "Good day, Nimali",
+     "size": 24,
+     "top": 92
     },
-    "colourShare": 0.002
+    "colourShare": 0
    },
    "consoleErrors": []
   }
  ],
  "findings": [
   {
-   "level": "FAIL",
-   "id": "gradient",
-   "width": 1440,
-   "message": "1 gradient fill(s): div.cl-footer.🔒️ → linear-gradient(color(srgb 0 0 0 / 0.03), color(srgb 0 0 0 / 0.03)), linear-gradient(color(srgb 1 1 1), color(",
-   "fix": "Use a flat colour or a real image. The only gradient allowed by default is a neutral scrim over a photo for legibility.",
-   "alsoAt": [
-    768,
-    390
-   ]
-  },
-  {
-   "level": "FAIL",
-   "id": "button-fx",
-   "width": 1440,
-   "message": "Buttons with shadow/glow.",
-   "fix": "Flat fill, one colour.",
-   "alsoAt": [
-    768,
-    390
-   ]
-  },
-  {
    "level": "WARN",
-   "id": "hero-void",
+   "id": "ragged-row",
    "width": 1440,
-   "message": "33% of the first screen is one empty block (540×780px at 0,120).",
-   "fix": "Place the void on purpose or fill it: move the picture, the film or one fact into it, grow the headline to meet it, or shrink the screen to its content. A void reads as placed only when something closes it on the far side and it is the screen's one rest."
+   "message": "1 pair(s) of cards in one row end at different heights (by 252px).",
+   "fix": "Cards that share a row share a bottom edge: balance them by their content (the same number of rows, a block of similar height beside it), or stack them. In testing, ragged rows were marked down every time."
   }
  ],
  "images": [
